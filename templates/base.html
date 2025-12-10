@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}ERP Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    {% include "layout/header.html" %}
+
+    <div class="main-container">
+
+        {% include "layout/sidebar.html" %}
+
+        <main class="content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </div>
+
+    {% include "layout/footer.html" %}
+
+</body>
+
+<!-- JS for Sidebar Dropdown -->
+<script src="{% static 'js/sidebar.js' %}"></script>
+
+</html>

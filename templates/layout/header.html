@@ -1,0 +1,10 @@
+<header class="header">
+    <div class="header-left">
+        <h1>ERP System</h1>
+    </div>
+
+    <div class="header-right">
+        <span>Welcome, {{ request.session.user_name }}</span>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</header>

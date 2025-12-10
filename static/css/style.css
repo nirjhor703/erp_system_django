@@ -1,0 +1,226 @@
+/* ====================================
+   GLOBAL & HTML BASE STYLES
+   ==================================== */
+   body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f9;
+    /* Ensure the body takes up the full viewport height */
+    min-height: 100vh; 
+}
+
+/* ====================================
+   LAYOUT STYLES (Header, Footer, Main Container)
+   ==================================== */
+
+/* HEADER */
+.header {
+    height: 60px;
+    background-color: #2c3e50;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box; /* Include padding in the height calculation */
+}
+
+/* FOOTER */
+.footer {
+    height: 56px;
+    padding-top: 1px;
+    background-color: #2c3e50;
+    color: #fff;
+    text-align: center;
+    line-height: 40px; /* Aligns content vertically */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* MAIN CONTENT LAYOUT */
+.main-container {
+    display: flex;
+    /* Dynamically calculate the remaining height: 100vh - header(60px) - footer(56px) = 116px */
+    min-height: calc(100vh - 117px); 
+    /* 117px used as 116px from calculation + 1px for safety margin/rounding */
+}
+
+/* CONTENT AREA */
+.content {
+    flex: 1; /* Takes up all remaining horizontal space */
+    padding: 25px;
+    background-color: #ecf0f1;
+}
+
+/* ====================================
+   SIDEBAR MENU STYLES
+   ==================================== */
+
+/* --- Base Sidebar Styles --- */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50; /* Dark background */
+    color: #ecf0f1;
+    font-family: Arial, sans-serif;
+    min-height: 100%; /* Takes full height of .main-container */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding-top: 10px; /* Added padding to the top of the sidebar */
+    box-sizing: border-box;
+    overflow-y: auto; /* Allows scrolling if menu exceeds height */
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* --- Menu Item and Link Styles --- */
+.menu-item {
+    border-bottom: 1px solid #34495e;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item a {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #ecf0f1;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Hover effect for all links */
+.menu-item a:hover {
+    background-color: #3498db; /* Primary blue for hover */
+    color: #ffffff;
+}
+
+/* Style for the link that toggles a submenu */
+.submenu-toggle {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Highlight the active toggle link */
+.menu-item.open > .submenu-toggle {
+    background-color: #2980b9;
+}
+
+/* --- Arrow Styling and Rotation --- */
+.arrow {
+    float: right;
+    display: inline-block;
+    transition: transform 0.2s ease;
+    font-size: 1.2em; 
+    line-height: 1;
+}
+
+/* Rotate the arrow when the parent menu item is open */
+.has-submenu.open > a .arrow {
+    transform: rotate(90deg);
+}
+
+/* --- Submenu Collapse/Expand Styles --- */
+.submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: #34495e; /* Slightly darker submenu background */
+    max-height: 0; /* Key for smooth collapse/expand */
+    overflow: hidden; /* Hide overflow content */
+    transition: max-height 0.3s ease-in-out;
+}
+
+/* State when the submenu is open/active */
+.menu-item.open > .submenu {
+    max-height: 1000px; /* Sufficiently large value to show all sub-content */
+    transition: max-height 0.3s ease-in-out;
+}
+
+
+/* --- Submenu Level Indentation and Styling --- */
+
+/* Level 2 Submenu Links */
+.submenu .menu-item a {
+    padding-left: 30px; /* Indentation for Level 2 */
+    font-weight: normal;
+    background-color: #34495e;
+}
+
+.submenu .menu-item a:hover {
+    background-color: #3a536b;
+}
+
+/* Level 3 Submenu Container (.child-menu) */
+.submenu .child-menu {
+    margin-left: 10px; /* MOVED 10px RIGHT */
+}
+
+/* Level 3 Submenu Links */
+.submenu .child-menu .menu-item a {
+    /* Adjusted padding-left based on the 10px container margin to maintain visual offset */
+    padding-left: 45px; /* Indentation for Level 3 */
+    background-color: #3a536b;
+}
+
+.submenu .child-menu .menu-item a:hover {
+    background-color: #466079;
+}
+
+/* ====================================
+   AUTHENTICATION FORM STYLES
+   ==================================== */
+
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.auth-container {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    box-sizing: border-box; /* Crucial for full-width inputs with padding */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.auth-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2c3e50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.auth-container button:hover {
+    background-color: #1a252f;
+}
+
+/* MESSAGES */
+.msg-box {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: #f8d7da; /* Light red/pink for errors/messages */
+    color: #721c24; /* Dark red text */
+    border-radius: 6px;
+    border: 1px solid #f5c6cb;
