@@ -4,5 +4,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),  # all ERP routes handled by core
+    path('', include('core.urls')),
+    path('', include('pharmacy.urls')), 
 ]
