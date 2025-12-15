@@ -1,0 +1,100 @@
+
+<div class="container py-4">
+  <div class="row">
+    <!-- LEFT: FORM + SELECTED MEDICINE LIST -->
+    <div class="col-md-6">
+      <!-- FORM CARD -->
+      <div class="card shadow-sm p-4 mb-3">
+        <h4>Add Medicine List</h4>
+        <form id="medicineForm">
+          {% csrf_token %}
+          <!-- Date Field -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Date</label>
+            <input type="date" id="date" name="date" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Product Name</label>
+            <input type="text" id="productSearch" class="form-control" placeholder="Type product name…" autocomplete="off">
+            <span class="text-danger small name_error"></span>
+          </div>
+          <div class="d-flex justify-content-center mt-3" style="gap: 10px;">
+            <input type="number" id="price" class="form-control" placeholder="Price">
+            <input type="number" id="quantity" class="form-control" placeholder="Qty">
+            <input type="number" id="total" class="form-control" placeholder="Total" readonly>
+          </div>
+           <div class="d-flex justify-content-center mt-3">
+            
+            <a href="{% url 'medicine-list' %}" class="btn btn-secondary ms-2 px-4">Back</a>
+          </div>
+
+          
+        </form>
+      </div>
+
+      <!-- SELECTED ITEMS CARD -->
+<!-- SELECTED ITEMS CARD -->
+<div class="card shadow-sm p-3">
+  <h5>Selected Medicines</h5>
+
+  <table class="table table-bordered table-sm mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>SL</th>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody id="selectedMedicineList">
+      <!-- AJAX will append rows here -->
+    </tbody>
+  </table>
+
+  <!-- Divider Line -->
+  <hr class="my-2">
+
+  <!-- TOTAL SECTION -->
+  <div class="d-flex justify-content-end">
+    <h5 class="m-0">
+      Total Amount: 
+      <span id="grandTotal" class="fw-bold">0</span> ৳
+    </h5>
+  </div>
+
+</div>
+
+    </div>
+
+    <!-- RIGHT: PRODUCT LIST -->
+    <div class="col-md-6">
+      <div class="card shadow-sm p-4">
+        <h5>Product List</h5>
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+          <table class="table table-bordered table-striped table-hover table-sm">
+            <thead class="table-dark sticky-top">
+              <tr>
+                <th>SL</th>
+                <th>Name</th>
+                <th>Manufacturer</th>
+                <th>Form</th>
+                <th>Quantity</th>
+                <th>CP</th>
+                <th>MRP</th>
+                <th>Select</th>
+              </tr>
+            </thead>
+            <tbody id="medicineListTableBody">
+              <!-- Ajax Loaded -->
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

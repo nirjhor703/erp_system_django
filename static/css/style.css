@@ -28,7 +28,7 @@
 
 /* FOOTER */
 .footer {
-    height: 56px;
+    height: 57px;
     padding-top: 1px;
     background-color: #2c3e50;
     color: #fff;
@@ -224,3 +224,130 @@
     color: #721c24; /* Dark red text */
     border-radius: 6px;
     border: 1px solid #f5c6cb;
+}
+
+/* ====================================
+   TABLE STYLES
+   ==================================== */
+   .table th, .table td {
+    vertical-align: middle !important;
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 60px;
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5),
+.table th:nth-child(6),
+.table td:nth-child(6),
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    width: 100px;
+}
+
+.table th:nth-child(8),
+.table td:nth-child(8) {
+    width: 140px;
+}
+
+/* Hover & selection for JS-driven table */
+#medicineListTableBody tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#medicineListTableBody tr.selected-row {
+    background-color: #d1e7ff !important;
+    font-weight: bold;
+}
+
+/* Pagination Styling */
+.pagination .page-item .page-link {
+    border-radius: 0.25rem;
+    margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: #fff;
+}
+
+/* ====================================
+   MODAL STYLING
+   ==================================== */
+.modal-header.bg-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.modal-xl {
+    max-width: 95%;
+}
+
+/* FORM ELEMENTS IN MODAL */
+input, select {
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+
+/* BUTTON STYLING */
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* TEXT ALIGNMENT */
+.text-end {
+    text-align: right !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+/* ====================================
+   SELECTED ITEMS LIST (JS) STYLING
+   ==================================== */
+#selectedMedicineList tr td {
+    vertical-align: middle;
+}
+
+.remove-item {
+    font-size: 0.85rem;
+    padding: 2px 6px;
+}
+
+/* SMALL RESPONSIVE FIX */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    .btn {
+        font-size: 0.85rem;
+    }
+}
