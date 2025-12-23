@@ -1,100 +1,286 @@
+<div class="modal-dialog modal-xl" style="max-width: 100%; height: 70vh;">
+  <div class="modal-content" style="height: 100%;">
+    <div class="modal-body" style="overflow-y: auto;">
 
-<div class="container py-4">
-  <div class="row">
-    <!-- LEFT: FORM + SELECTED MEDICINE LIST -->
-    <div class="col-md-6">
-      <!-- FORM CARD -->
-      <div class="card shadow-sm p-4 mb-3">
-        <h4>Add Medicine List</h4>
-        <form id="medicineForm">
-          {% csrf_token %}
-          <!-- Date Field -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Date</label>
-            <input type="date" id="date" name="date" class="form-control" required>
+      <h4 class="text-center mb-4">Add Pharmacy Purchase</h4>
+
+      <div class="container-fluid">
+        <div class="row">
+
+          <!-- LEFT SIDE -->
+          <div class="col-md-6">
+
+            <!-- DATE / STORE / LOCATION -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="fw-semibold">Location</label>
+                <input type="text" id="location" class="form-control" placeholder="Enter location">
+              </div>
+
+              <div class="col-md-4">
+                <label class="fw-semibold">Store <span class="text-danger">*</span></label>
+                <select id="store" class="form-select">
+                  <option value="">Loading...</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="fw-semibold">Date</label>
+                <input type="date" id="date" class="form-control">
+              </div>
+            </div>
+
+            <!-- SUPPLIER -->
+            <div class="mb-3">
+              <label class="fw-semibold">Supplier Name</label>
+              <input type="text" id="supplier" name="supplier" class="form-control" placeholder="Select Supplier">
+            </div>
+
+            <!-- PRODUCT -->
+            <div class="mb-3">
+              <label class="fw-semibold">Product Name</label>
+              <input type="text" id="productSearch" class="form-control form-control-sm" autocomplete="off">
+              <span class="text-danger small name_error"></span>
+            </div>
+
+            <!-- QTY / UNIT / EXPIRY -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="fw-semibold">QTY</label>
+                <input type="number" id="quantity" class="form-control">
+              </div>
+
+              <div class="col-md-4">
+                <label class="fw-semibold">Unit</label>
+                <select id="unit" class="form-select">
+                  <option>PCS</option>
+                  <option>Box</option>
+                  <option>Strip</option>
+                  <option>Bottle</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="fw-semibold">Expiry Date</label>
+                <input type="date" id="expiry" class="form-control">
+              </div>
+            </div>
+
+            <!-- CP / MRP / TOTAL -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="fw-semibold">CP</label>
+                <input type="number" id="price" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label class="fw-semibold">MRP</label>
+                <input type="number" id="mrp" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label class="fw-semibold">Total</label>
+                <input type="number" id="total" class="form-control" readonly>
+              </div>
+            </div>
+
+            <!-- SELECTED MEDICINES TABLE -->
+            <div class="table-responsive mb-3">
+              <table class="table table-bordered table-sm">
+                <thead class="bg-success text-white">
+                  <tr>
+                    <th>SL</th>
+                    <th>Name</th>
+                    <th>QTY</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th>Remove</th>
+                  </tr>
+                </thead>
+                <tbody id="selectedMedicineList"></tbody>
+              </table>
+            </div>
+
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Product Name</label>
-            <input type="text" id="productSearch" class="form-control" placeholder="Type product name…" autocomplete="off">
-            <span class="text-danger small name_error"></span>
+          <!-- RIGHT SIDE -->
+          <div class="col-md-6">
+
+            <!-- PRODUCT LIST -->
+            <div class="card mb-4">
+              <div class="card-header bg-success text-white text-center">
+                Product List
+              </div>
+              <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                <table class="table table-bordered table-sm">
+                  <thead class="table-success sticky-top">
+                    <tr>
+                      <th>Name</th>
+                      <th>Generic Name</th>
+                      <th>Manufacture</th>
+                      <th>Form</th>
+                      <th>Qty</th>
+                      <th>CP</th>
+                      <th>MRP</th>
+                      <th>Select</th>
+                    </tr>
+                  </thead>
+                  <tbody id="medicineListTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- INVOICE SUMMARY -->
+            <div class="invoice-summary">
+
+              <div class="row g-3 mb-2">
+                <label class="col-md-4 fw-semibold">Invoice Amount</label>
+                <div class="col-md-8">
+                  <input type="number" id="invoiceAmount" class="form-control" readonly>
+                </div>
+              </div>
+
+              <div class="row g-3 mb-2">
+                <label class="col-md-4 fw-semibold">Discount(%)</label>
+                <div class="col-md-8">
+                  <input type="number" id="discount" class="form-control" value="0">
+                </div>
+              </div>
+
+              <div class="row g-3 mb-2">
+                <label class="col-md-4 fw-semibold">Net Amount</label>
+                <div class="col-md-8">
+                  <input type="number" id="netAmount" class="form-control" readonly>
+                </div>
+              </div>
+
+              <div class="row g-3 mb-2">
+                <label class="col-md-4 fw-semibold">Advance</label>
+                <div class="col-md-8">
+                  <input type="number" id="advanced" class="form-control">
+                </div>
+              </div>
+
+              <div class="row g-3 mb-4">
+                <label class="col-md-4 fw-semibold">Balance</label>
+                <div class="col-md-8">
+                  <input type="number" id="balance" class="form-control" readonly>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button type="submit" id="SubmitBtn" class="btn btn-primary px-5">Submit</button>
+              </div>
+
+            </div>
+
           </div>
-          <div class="d-flex justify-content-center mt-3" style="gap: 10px;">
-            <input type="number" id="price" class="form-control" placeholder="Price">
-            <input type="number" id="quantity" class="form-control" placeholder="Qty">
-            <input type="number" id="total" class="form-control" placeholder="Total" readonly>
-          </div>
-           <div class="d-flex justify-content-center mt-3">
-            
-            <a href="{% url 'medicine-list' %}" class="btn btn-secondary ms-2 px-4">Back</a>
-          </div>
-
-          
-        </form>
-      </div>
-
-      <!-- SELECTED ITEMS CARD -->
-<!-- SELECTED ITEMS CARD -->
-<div class="card shadow-sm p-3">
-  <h5>Selected Medicines</h5>
-
-  <table class="table table-bordered table-sm mb-0">
-    <thead class="table-light">
-      <tr>
-        <th>SL</th>
-        <th>Name</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-
-    <tbody id="selectedMedicineList">
-      <!-- AJAX will append rows here -->
-    </tbody>
-  </table>
-
-  <!-- Divider Line -->
-  <hr class="my-2">
-
-  <!-- TOTAL SECTION -->
-  <div class="d-flex justify-content-end">
-    <h5 class="m-0">
-      Total Amount: 
-      <span id="grandTotal" class="fw-bold">0</span> ৳
-    </h5>
-  </div>
-
-</div>
-
-    </div>
-
-    <!-- RIGHT: PRODUCT LIST -->
-    <div class="col-md-6">
-      <div class="card shadow-sm p-4">
-        <h5>Product List</h5>
-        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-          <table class="table table-bordered table-striped table-hover table-sm">
-            <thead class="table-dark sticky-top">
-              <tr>
-                <th>SL</th>
-                <th>Name</th>
-                <th>Manufacturer</th>
-                <th>Form</th>
-                <th>Quantity</th>
-                <th>CP</th>
-                <th>MRP</th>
-                <th>Select</th>
-              </tr>
-            </thead>
-            <tbody id="medicineListTableBody">
-              <!-- Ajax Loaded -->
-            </tbody>
-          </table>
-
         </div>
       </div>
+
     </div>
   </div>
 </div>
+
+<script>
+  document.getElementById("date").value = new Date().toISOString().substring(0, 10);
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/get-stores/")
+        .then(response => response.json())
+        .then(data => {
+            const storeSelect = document.getElementById("store");
+            storeSelect.innerHTML = '<option value="">Select Store</option>';
+
+            data.stores.forEach(store => {
+                let opt = document.createElement("option");
+                opt.value = store.id;
+                opt.textContent = store.name;
+                storeSelect.appendChild(opt);
+            });
+        })
+        .catch(error => console.error("Error loading stores:", error));
+});
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#supplier').one('focus', function() { // first click e fetch
+        $.ajax({
+            url: "{% url 'get_suppliers' %}",
+            method: "GET",
+            success: function(response) {
+                let suppliers = response.suppliers;
+                let options = suppliers.map(s => `<option value="${s.name}"></option>`).join('');
+                $('#supplier').after(`<datalist id="supplier-list">${options}</datalist>`);
+                $('#supplier').attr('list', 'supplier-list');
+            },
+            error: function() {
+                alert('Failed to fetch suppliers');
+            }
+        });
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    $('#location').one('focus', function() {
+        $.ajax({
+            url: "{% url 'get_divisions' %}",
+            method: "GET",
+            success: function(response) {
+                let divisions = response.divisions;
+                let options = divisions.map(d => `<option value="${d.name}"></option>`).join('');
+                $('#location').after(`<datalist id="division-list">${options}</datalist>`);
+                $('#location').attr('list', 'division-list');
+            },
+            error: function() {
+                alert('Failed to fetch divisions');
+            }
+        });
+    });
+});
+</script>
+<script>
+$(document).ready(function () {
+
+    $("#SubmitBtn").on("click", function (e) {
+        e.preventDefault();   // page reload বন্ধ
+
+        let store_id = $("#store").val();
+        let location = $("#location").val();
+
+        if (!store_id) {
+            alert("Please select a store");
+            return;
+        }
+
+        $.ajax({
+            url: "/transaction/temp/create/",
+            type: "POST",
+            data: {
+                store_id: store_id,
+                location: location,
+                tran_type: 1,            // Pharmacy Purchase (dummy for now)
+                tran_method: "PURCHASE", // required field
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function (res) {
+                if (res.success) {
+                    alert("Transaction Created\nTran ID: " + res.tran_id);
+                    console.log("Generated Tran ID:", res.tran_id);
+                } else {
+                    alert(res.message || "Failed");
+                }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+                alert("Something went wrong while submitting");
+            }
+        });
+    });
+
+});
+</script>
 

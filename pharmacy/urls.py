@@ -18,6 +18,12 @@ urlpatterns = [
     path('get-stores/', views.get_stores, name='get_stores'),
     path('get-suppliers/', views.get_suppliers, name='get_suppliers'),
     path('get-divisions/', views.get_divisions, name='get_divisions'),
+    path("get-transaction/<str:tran_id>/", views.get_transaction, name="get_transaction"),
+
+    
+    path('transaction/temp/create/', views.create_transaction_temp, name='create_transaction_temp'),
+    # path('transaction/temp/test-tran-id/', views.test_tran_id_generation),
+    # path('transaction/temp/create/', views.create_transaction_temp),
 
 
 

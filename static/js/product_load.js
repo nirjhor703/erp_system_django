@@ -58,6 +58,29 @@ $(document).ready(function () {
             row[0].scrollIntoView({ behavior: "smooth", block: "center" });
         }
     }
+    // Click on any row → fill product name and price
+$(document).on("click", "#medicineListTableBody tr", function () {
+    let index = $(this).data("index");
+    if (index === undefined) return;
+
+    // Get selected product from products array
+    let selectedProduct = products[index];
+
+    if (!selectedProduct) return;
+        // Remove previous highlight
+    $("#medicineListTableBody tr").removeClass("selected-row");
+
+    // Highlight clicked row
+    $(this).addClass("selected-row");
+
+    // Set product name and price in input fields
+    $("#productSearch").val(selectedProduct.name);
+    $("#price").val(selectedProduct.cp);
+
+    // Focus quantity field for quick entry
+    $("#quantity").focus();
+});
+
 
     $("#productSearch").on("input", function () {
         query = $(this).val();
@@ -73,14 +96,16 @@ $(document).ready(function () {
         $("#total").val(total.toFixed(2));
     });
 
-    // ADD to selected list
+// ADD to selected list
 function addToSelectedList(pname, price, qty, total) {
+
     let row = `
         <tr>
             <td>${$("#selectedMedicineList tr").length + 1}</td>
             <td>${pname}</td>
             <td>${qty}</td>
             <td>${price}</td>
+            <td>${total}</td>
             <td>
                 <button type="button" class="btn btn-sm btn-danger remove-item">Remove</button>
             </td>
@@ -95,8 +120,8 @@ function addToSelectedList(pname, price, qty, total) {
     $("#quantity").val("");
     $("#total").val("");
 
-    // Update total (optional, if you have bottom total)
     updateSelectedTotal();
+    updateInvoiceSummary(); 
 }
 
 // Remove button functionality
@@ -181,12 +206,85 @@ if (e.key === "Enter") {
 
         // If not duplicate → allow selection
         $("#productSearch").val(selectedProduct.name);
-        $("#price").val(selectedProduct.mrp);
+        $("#price").val(selectedProduct.cp);
         $("#quantity").focus();
     }
 }
 
     });
+    
+    // Mouse click handler
+$(document).on("click", "#medicineListTableBody tr", function () {
+    let index = $(this).data("index");
+    if (index === undefined) return;
+
+    let selectedProduct = products[index];
+    let pname = selectedProduct.name;
+
+    // 🔥 DUPLICATE CHECK
+    let duplicate = false;
+    $("#selectedMedicineList tr").each(function () {
+        let existingName = $(this).find("td:eq(1)").text().trim();
+        if (existingName === pname) duplicate = true;
+    });
+
+    if (duplicate) {
+        alert("❌ This product is already selected!");
+        // Clear product field and keep focus
+        $("#productSearch").val("").focus();
+        return; // stop execution
+    }
+
+    // Not duplicate → fill product
+    $("#medicineListTableBody tr").removeClass("selected-row");
+    $(this).addClass("selected-row");
+
+    currentIndex = index;
+
+    $("#productSearch").val(selectedProduct.name);
+    $("#price").val(selectedProduct.cp);
+    $("#quantity").focus();
+});
+
+// Keyboard Enter handler
+// $(document).on("keydown", function (e) {
+//     let rows = $("#medicineListTableBody tr");
+//     if (rows.length === 0) return;
+
+//     // Arrow navigation...
+//     if (e.key === "ArrowDown") { e.preventDefault(); currentIndex = Math.min(currentIndex + 1, rows.length - 1); highlightRow(); }
+//     if (e.key === "ArrowUp") { e.preventDefault(); currentIndex = Math.max(currentIndex - 1, 0); highlightRow(); }
+
+//     if (e.key === "Enter") {
+//         if ($("#quantity").is(":focus")) return;
+
+//         if (currentIndex >= 0 && currentIndex < rows.length) {
+//             e.preventDefault();
+
+//             let selectedProduct = products[currentIndex];
+//             let pname = selectedProduct.name;
+
+//             // 🔥 DUPLICATE CHECK
+//             let duplicate = false;
+//             $("#selectedMedicineList tr").each(function () {
+//                 let existingName = $(this).find("td:eq(1)").text().trim();
+//                 if (existingName === pname) duplicate = true;
+//             });
+
+//             if (duplicate) {
+//                 alert("❌ This product is already selected!");
+//                 // Clear product field and keep focus
+//                 $("#productSearch").val("").focus();
+//                 return;
+//             }
+
+//             $("#productSearch").val(selectedProduct.name);
+//             $("#price").val(selectedProduct.cp);
+//             $("#quantity").focus();
+//         }
+//     }
+// });
+
 
     // ENTER in quantity field → Add item
 $("#quantity").on("keydown", function (e) {
@@ -219,8 +317,48 @@ function updateGrandTotal() {
 $(document).on("click", ".deleteRow", function () {
     $(this).closest("tr").remove();
     updateGrandTotal();
+    updateSelectedTotal();
+    updateInvoiceSummary();
 });
+ $("#discount, #advanced").on("input", function () {
+    updateInvoiceSummary();
+});
+
+
+
+
 
 
     loadProducts();
 });
+
+function updateInvoiceSummary() {
+    let invoiceAmount = 0;
+
+    // Sum row totals
+    $("#selectedMedicineList tr").each(function () {
+        let rowTotal = parseFloat($(this).find("td:eq(4)").text()) || 0;
+        invoiceAmount += rowTotal;
+    });
+
+    let discountPercent = parseFloat($("#discount").val()) || 0;
+    let advance = parseFloat($("#advanced").val()) || 0;
+
+    // Calculate discount amount (percentage)
+    let discountAmount = (invoiceAmount * discountPercent) / 100;
+
+    // Net amount after discount
+    let netAmount = invoiceAmount - discountAmount;
+    if (netAmount < 0) netAmount = 0;
+
+    // Balance after advance
+    let balance = netAmount - advance;
+    if (balance < 0) balance = 0;
+
+    // Set values
+    $("#invoiceAmount").val(invoiceAmount.toFixed(2));
+    $("#netAmount").val(netAmount.toFixed(2));
+    $("#balance").val(balance.toFixed(2));
+}
+
+

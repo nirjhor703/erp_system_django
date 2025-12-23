@@ -857,7 +857,7 @@ class TransactionDetailsTemps(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'transaction_details_temps'
+        db_table = 'transaction__details__temps'
 
 
 class TransactionGroupes(models.Model):
@@ -974,7 +974,7 @@ class TransactionMainsTemps(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'transaction_mains_temps'
+        db_table = 'transaction__mains__temps'
 
 
 class TransactionWiths(models.Model):
