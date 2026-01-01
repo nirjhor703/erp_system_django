@@ -352,3 +352,10 @@ input, select {
     }
 }
 
+#edit_medicineListTableBody tr.selected-row td{
+    background:#ffe08a !important;
+    color:#000 !important;
+    font-weight:800 !important;
+    border-color:#e6b800 !important;
+}
+

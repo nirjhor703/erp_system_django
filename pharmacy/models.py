@@ -907,7 +907,7 @@ class TransactionMainHeads(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'transaction_main_heads'
+        db_table = 'transaction__main__heads'
 
 
 class TransactionMains(models.Model):

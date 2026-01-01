@@ -1,6 +1,7 @@
 <div class="modal-dialog modal-xl" style="max-width: 100%; height: 70vh;">
   <div class="modal-content" style="height: 100%;">
     <div class="modal-body" style="overflow-y: auto;">
+      
 
       <h4 class="text-center mb-4">Add Pharmacy Purchase</h4>
 
@@ -19,6 +20,7 @@
 
               <div class="col-md-4">
                 <label class="fw-semibold">Store <span class="text-danger">*</span></label>
+                <input type="hidden" id="edit_tran_id">
                 <select id="store" class="form-select">
                   <option value="">Loading...</option>
                 </select>
@@ -31,10 +33,26 @@
             </div>
 
             <!-- SUPPLIER -->
-            <div class="mb-3">
-              <label class="fw-semibold">Supplier Name</label>
-              <input type="text" id="supplier" name="supplier" class="form-control" placeholder="Select Supplier">
+            <!-- SUPPLIER AND PAYMENT METHOD ROW -->
+            <div class="row mb-3">
+              <!-- Supplier Name -->
+              <div class="col-md-6">
+                <label class="fw-semibold">Supplier Name</label>
+                <input type="text" id="supplier" name="supplier" class="form-control" placeholder="Select Supplier">
+              </div>
+
+              <!-- Payment Method -->
+              <div class="col-md-6">
+                <label class="fw-semibold">Payment Method</label>
+                <select id="payment_method" name="tran_method" class="form-control">
+                  <option value="" disabled selected>Select Payment Method</option>
+                  <option value="bkash">Bkash</option>
+                  <option value="nogod">Nogod</option>
+                  <option value="rocket">Rocket</option>
+                </select>
+              </div>
             </div>
+
 
             <!-- PRODUCT -->
             <div class="mb-3">
@@ -134,35 +152,35 @@
               <div class="row g-3 mb-2">
                 <label class="col-md-4 fw-semibold">Invoice Amount</label>
                 <div class="col-md-8">
-                  <input type="number" id="invoiceAmount" class="form-control" readonly>
+                  <input type="number" id="invoiceAmount" name="bill_amount" class="form-control" readonly>
                 </div>
               </div>
 
               <div class="row g-3 mb-2">
                 <label class="col-md-4 fw-semibold">Discount(%)</label>
                 <div class="col-md-8">
-                  <input type="number" id="discount" class="form-control" value="0">
+                  <input type="number" id="discount" name="discount" class="form-control" value="0">
                 </div>
               </div>
 
               <div class="row g-3 mb-2">
                 <label class="col-md-4 fw-semibold">Net Amount</label>
                 <div class="col-md-8">
-                  <input type="number" id="netAmount" class="form-control" readonly>
+                  <input type="number" id="netAmount" name="net_amount"class="form-control" readonly>
                 </div>
               </div>
 
               <div class="row g-3 mb-2">
                 <label class="col-md-4 fw-semibold">Advance</label>
                 <div class="col-md-8">
-                  <input type="number" id="advanced" class="form-control">
+                  <input type="number" id="advanced" name="payment"class="form-control">
                 </div>
               </div>
 
               <div class="row g-3 mb-4">
                 <label class="col-md-4 fw-semibold">Balance</label>
                 <div class="col-md-8">
-                  <input type="number" id="balance" class="form-control" readonly>
+                  <input type="number" id="balance" name="due"class="form-control" readonly>
                 </div>
               </div>
 
@@ -179,6 +197,9 @@
     </div>
   </div>
 </div>
+
+
+
 
 <script>
   document.getElementById("date").value = new Date().toISOString().substring(0, 10);
@@ -242,7 +263,7 @@ $(document).ready(function() {
     });
 });
 </script>
-<script>
+{% comment %} <script>
 $(document).ready(function () {
 
     $("#SubmitBtn").on("click", function (e) {
@@ -250,30 +271,62 @@ $(document).ready(function () {
 
         let store_id = $("#store").val();
         let location = $("#location").val();
+        let tran_method = $("#payment_method").val(); // Payment method dropdown
+        let bill_amount = $("#invoiceAmount").val();
+        let discount    = $("#discount").val();
+        let net_amount  = $("#netAmount").val();
+        let payment     = $("#advanced").val();
+        let due         = $("#balance").val();      // Balance = Payment
 
+        
+
+        // Validation
         if (!store_id) {
             alert("Please select a store");
             return;
         }
 
+        if (!location) {
+            alert("Please select a location");
+            return;
+        }
+
+        if (!tran_method) {
+            alert("Please select a payment method");
+            return;
+        }
+
+        // AJAX request
         $.ajax({
             url: "/transaction/temp/create/",
             type: "POST",
             data: {
                 store_id: store_id,
                 location: location,
-                tran_type: 1,            // Pharmacy Purchase (dummy for now)
-                tran_method: "PURCHASE", // required field
+                tran_type: 1,
+                tran_method: tran_method,
+                bill_amount: bill_amount,
+                discount: discount,
+                net_amount: net_amount,
+                payment: payment,
+                due: due,
+                
+                
                 csrfmiddlewaretoken: "{{ csrf_token }}"
             },
-            success: function (res) {
-                if (res.success) {
-                    alert("Transaction Created\nTran ID: " + res.tran_id);
-                    console.log("Generated Tran ID:", res.tran_id);
-                } else {
-                    alert(res.message || "Failed");
-                }
-            },
+       
+              success: function (res) {
+              if(res.success){
+                  alert("Transaction Created\nTran ID: " + res.tran_id);
+                  $('#addMedicineModal').modal('hide');
+                  $('#addMedicineForm')[0].reset();
+                  
+
+                  $("#medicineTable tbody").prepend(newRow);
+
+                  
+              }
+          },
             error: function (xhr) {
                 console.error(xhr.responseText);
                 alert("Something went wrong while submitting");
@@ -282,5 +335,36 @@ $(document).ready(function () {
     });
 
 });
-</script>
+</script> {% endcomment %}
 
+{% comment %} <script>
+$("#SubmitBtn").on("click", function(e){
+    e.preventDefault();
+
+    if($(this).text() == "Verify"){
+        let tranId = $("#tran_id").val();
+
+        $.ajax({
+            url: "/transaction/temp/verify/",
+            type: "POST",
+            data: {
+                tran_id: tranId,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function(res){
+                if(res.success){
+                    // Close modal
+                    $("#verifyModal").modal("hide");
+
+                    // Change button in table to disabled Verified
+                    $(`button[data-tran-id="${res.id}"]`)
+                        .replaceWith('<button class="btn btn-sm btn-success" disabled>Verified</button>');
+                }
+            }
+        });
+    } else {
+        // normal Add flow
+    }
+});
+</script>
+ {% endcomment %}

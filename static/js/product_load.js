@@ -290,19 +290,24 @@ $(document).on("click", "#medicineListTableBody tr", function () {
 $("#quantity").on("keydown", function (e) {
     if (e.key === "Enter") {
         e.preventDefault();
-        e.stopPropagation();   // VERY IMPORTANT
+        e.stopPropagation();
 
-        let pname = $("#productSearch").val();
-        let price = $("#price").val();
-        let qty = $("#quantity").val();
-        let total = $("#total").val();
+        let pname = $("#productSearch").val().trim();
+        let price = parseFloat($("#price").val()) || 0;
+        let qty   = parseFloat($("#quantity").val()) || 0;
+        let total = parseFloat($("#total").val()) || 0;
+
         $("#productSearch").focus();
 
-        if (pname && price && qty && total) {
-            addToSelectedList(pname, price, qty, total);
+        if(!pname || price <= 0 || qty <= 0 || total <= 0){
+            alert("Please select a product and enter quantity correctly.");
+            return;
         }
+
+        addToSelectedList(pname, price, qty, total);
     }
 });
+
 function updateGrandTotal() {
     let total = 0;
 
@@ -323,11 +328,6 @@ $(document).on("click", ".deleteRow", function () {
  $("#discount, #advanced").on("input", function () {
     updateInvoiceSummary();
 });
-
-
-
-
-
 
     loadProducts();
 });
@@ -360,5 +360,81 @@ function updateInvoiceSummary() {
     $("#netAmount").val(netAmount.toFixed(2));
     $("#balance").val(balance.toFixed(2));
 }
+
+$("#perPage").on("change", function(){
+    let per_page = $(this).val();
+
+    // Get current filters if you have search/status/date inputs
+    let search = $("#searchInput").val() || "";
+    let status = $("#statusFilter").val() || "";
+    let start_date = $("#startDate").val() || "";
+    let end_date = $("#endDate").val() || "";
+
+    $.ajax({
+        url: "/medicine/",
+        type: "GET",
+        data: {
+            per_page: per_page,
+            search: search,
+            status: status,
+            start_date: start_date,
+            end_date: end_date,
+        },
+        dataType: "html",
+        success: function(res){
+            // Replace table body and pagination
+            $("#medicineTable tbody").html($(res).find("#medicineTable tbody").html());
+            $("#pagination").html($(res).find("#pagination").html());
+        }
+    });
+});
+
+ function loadSuppliers(selectedId = null) {
+        $.get("/get_suppliers/", function(res){
+            let options = `<option value="">Select Supplier</option>`;
+            res.suppliers.forEach(s => {
+                options += `<option value="${s.id}" ${s.id == selectedId ? "selected" : ""}>${s.name}</option>`;
+            });
+            $("#supplier").html(options);
+        });
+    }
+// function openEditModal(tran_id){
+//     $.get("/transaction/get/"+tran_id, function(res){
+
+//         if(!res.success){ alert(res.message); return; }
+
+//         let m = res.main;
+
+//         $("#edit_tran_id").val(m.tran_id);
+//         $("#edit_supplier").val(m.supplier);
+//         $("#edit_store").val(m.store_id);
+//         $("#edit_payment_method").val(m.tran_method);
+//         $("#edit_invoiceAmount").val(m.bill_amount);
+//         $("#edit_discount").val(m.discount);
+//         $("#edit_netAmount").val(m.net_amount);
+//         $("#edit_advanced").val(m.payment);
+//         $("#edit_balance").val(m.due);
+
+//         $("#edit_selectedMedicineList").html("");
+
+//         let sl = 1;
+//         res.products.forEach(p=>{
+//             $("#edit_selectedMedicineList").append(`
+//                 <tr>
+//                     <td>${sl++}</td>
+//                     <td>${p.name}</td>
+//                     <td>${p.qty}</td>
+//                     <td>${p.price}</td>
+//                     <td>${p.total}</td>
+//                     <td></td>
+//                 </tr>
+//             `);
+//         });
+
+//         $("#verifyModal").modal("show");
+//     });
+// }
+
+
 
 
