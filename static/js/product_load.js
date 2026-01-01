@@ -389,15 +389,22 @@ $("#perPage").on("change", function(){
     });
 });
 
- function loadSuppliers(selectedId = null) {
-        $.get("/get_suppliers/", function(res){
-            let options = `<option value="">Select Supplier</option>`;
-            res.suppliers.forEach(s => {
-                options += `<option value="${s.id}" ${s.id == selectedId ? "selected" : ""}>${s.name}</option>`;
-            });
-            $("#supplier").html(options);
+function loadSuppliers(selectedId = null) {
+    $.get("/get_suppliers/", function (res) {
+        let options = `<option value="">Select Supplier</option>`;
+
+        res.suppliers.forEach(s => {
+            options += `
+                <option value="${s.id}" ${s.id == selectedId ? "selected" : ""}>
+                    ${s.name}
+                </option>
+            `;
         });
-    }
+
+        $("#supplier").html(options);
+    });
+}
+
 // function openEditModal(tran_id){
 //     $.get("/transaction/get/"+tran_id, function(res){
 
@@ -434,7 +441,3 @@ $("#perPage").on("change", function(){
 //         $("#verifyModal").modal("show");
 //     });
 // }
-
-
-
-
