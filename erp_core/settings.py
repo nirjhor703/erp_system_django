@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'core',
     'pharmacy',
     'users',
+    'permissions',
     'location',
     'bank',
     'store',

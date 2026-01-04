@@ -207,6 +207,58 @@ $(document).ready(function () {
         return;
     }
 
+        let store    = $("#store").val();
+    let location = $("#location").val().trim();
+    let supplier = $("#supplier").val().trim();
+    let method   = $("#payment_method").val();
+
+    let invoice  = parseFloat($("#invoiceAmount").val()) || 0;
+    let discount = parseFloat($("#discount").val()) || 0;
+    let net      = parseFloat($("#netAmount").val()) || 0;
+    let advance  = parseFloat($("#advanced").val()) || 0;
+    let balance  = parseFloat($("#balance").val()) || 0;
+
+        if(!store){
+        alert("Please select a store.");
+        return;
+    }
+
+    if(!location){
+        alert("Please enter location.");
+        $("#location").focus();
+        return;
+    }
+
+    if(!method){
+        alert("Please select payment method.");
+        return;
+    }
+
+    if(invoice <= 0){
+        alert("Invoice amount must be greater than 0.");
+        return;
+    }
+
+    if(discount < 0 || discount > 100){
+        alert("Discount must be between 0–100%");
+        return;
+    }
+
+    if(net <= 0){
+        alert("Net amount is invalid.");
+        return;
+    }
+
+    if(advance < 0){
+        alert("Advance cannot be negative.");
+        return;
+    }
+
+    if(balance < 0){
+        alert("Balance cannot be negative.");
+        return;
+    }
+
         const data = {
             store_id: $("#store").val(),
             location: $("#location").val(),
