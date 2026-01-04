@@ -1,70 +1,92 @@
 <div class="sidebar">
     <ul class="menu">
 
-        <!-- ADMINISTRATOR -->
+       <!-- ADMINISTRATOR -->
         <li class="menu-item has-submenu">
-            <a href="#" class="submenu-toggle">ADMINISTRATOR <span class="arrow">›</span></a>
+            <a href="#" class="submenu-toggle">
+                ADMINISTRATOR <span class="arrow">›</span>
+            </a>
 
             <ul class="submenu">
 
-                <!-- Setup -->
+                <!-- Company -->
                 <li class="menu-item has-submenu">
-                    <a href="#" class="submenu-toggle">Setup <span class="arrow">›</span></a>
+                    <a href="#" class="submenu-toggle">
+                        Company <span class="arrow">›</span>
+                    </a>
                     <ul class="submenu child-menu">
-                        <li><a href="#">Category</a></li>
-                        <li><a href="#">Brand</a></li>
-                        <li><a href="#">Unit</a></li>
+                        <li><a href="/company-types/">Company Types</a></li>
+                        <li><a href="/company-details/">Company Details</a></li>
                     </ul>
                 </li>
 
                 <!-- Users -->
                 <li class="menu-item has-submenu">
-                    <a href="#" class="submenu-toggle">Users <span class="arrow">›</span></a>
+                    <a href="#" class="submenu-toggle">
+                        Users <span class="arrow">›</span>
+                    </a>
                     <ul class="submenu child-menu">
-                        <li><a href="#">Salesman</a></li>
-                        <li><a href="#">Store Manager</a></li>
+                        <li><a href="/users/roles/">Roles</a></li>
+                        <li><a href="/users/super-admin/">Super Admin</a></li>
+                        <li><a href="#">Admin</a></li> 
                     </ul>
                 </li>
 
-
-                <!-- Transactions -->
+                <!--Permissions -->
                 <li class="menu-item has-submenu">
-                    <a href="#" class="submenu-toggle">Transactions <span class="arrow">›</span></a>
+                    <a href="#" class="submenu-toggle">
+                        Permissions <span class="arrow">›</span>
+                    </a>
                     <ul class="submenu child-menu">
-                        <li><a href="#">Pharmacy Purchase </a></li>
-                        <li><a href="#">Pharmacy Issue </a></li>
-                        <li><a href="#">Pharmacy Return </a></li>
+                        <li><a href="#">Main Head</a></li>
+                        <li><a href="#">Heads</a></li>
+                        <li><a href="#">Company Type</a></li>
+                        <li><a href="#">Company</a></li>
+                        <li><a href="#">User Permissions</a></li>
                     </ul>
                 </li>
 
-                <!-- Adjustment -->
-                <li class="menu-item has-submenu">
-                    <a href="#" class="submenu-toggle">Adjustment <span class="arrow">›</span></a>
-                    <ul class="submenu child-menu">
-                        <li><a href="#">Pharmacy Purchase </a></li>
-                        <li><a href="#">Pharmacy Issue </a></li>
-                        <li><a href="#">Pharmacy Return </a></li>
-                    </ul>
+
+                <!-- Bank -->
+                <li class="menu-item">
+                    <a href="{% url 'bank_page' %}">Bank</a>
                 </li>
 
-                <!-- Party Payment -->
-                <li class="menu-item has-submenu">
-                    <a href="#" class="submenu-toggle">Party Payment <span class="arrow">›</span></a>
-                    <ul class="submenu child-menu">
-                        <li><a href="#">Pharmacy Purchase </a></li>
-                        <li><a href="#">Pharmacy Issue </a></li>
-                        <li><a href="#">Pharmacy Return </a></li>
-                    </ul>
+                <!-- Locations -->
+                <li class="menu-item">
+                    <a href="{% url 'location_page' %}">Locations</a>
                 </li>
 
-                <!-- Reports -->
-                <li class="menu-item has-submenu">
-                    <a href="#" class="submenu-toggle">Reports <span class="arrow">›</span></a>
-                    <ul class="submenu child-menu">
-                        <li><a href="#">Salesman</a></li>
-                        <li><a href="#">Store Manager</a></li>
-                    </ul>
+                <!-- Store Details -->
+                <li class="menu-item">
+                    <a href="{% url 'store_page' %}">Store Details</a>
                 </li>
+
+                <!-- Payment Method -->
+                <li class="menu-item">
+                    <a href="{% url 'payment_method_page' %}">Payment Method</a>
+                </li>
+
+                <!-- Main Head -->
+                <li class="menu-item">
+                    <a href="{% url 'transaction_main_head_page' %}">Main Head</a>
+                </li>
+
+                <!-- Transaction Group -->
+                <li class="menu-item">
+                    <a href="{% url 'transaction_groupe_page' %}">Transaction Group</a>
+                </li>
+
+                <!-- Transaction Head -->
+                <li class="menu-item">
+                    <a href="#">Transaction Head</a>
+                </li>
+
+                <!-- Corporate -->
+                <li class="menu-item">
+                    <a href="{% url 'corporates_page' %}">Corporate</a>
+                </li>
+
             </ul>
         </li>
 
@@ -299,7 +321,7 @@
                 <li class="menu-item has-submenu">
                     <a href="#" class="submenu-toggle">Transactions <span class="arrow">›</span></a>
                     <ul class="submenu child-menu">
-                        <li><a href="#">Pharmacy Purchase </a></li>
+                        <li><a href="/medicine/">Pharmacy Purchase </a></li>
                         <li><a href="#">Pharmacy Issue </a></li>
                         <li><a href="#">Pharmacy Return </a></li>
                     </ul>

@@ -1,73 +1,141 @@
 /* ====================================
    GLOBAL & HTML BASE STYLES
    ==================================== */
-   body, html {
+body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f4f6f9;
-    /* Ensure the body takes up the full viewport height */
-    min-height: 100vh; 
+    min-height: 100vh; /* Full viewport height */
 }
 
 /* ====================================
-   LAYOUT STYLES (Header, Footer, Main Container)
+   LAYOUT STYLES
    ==================================== */
 
-/* HEADER */
+/* -------------------------------
+   HEADER
+--------------------------------- */
+/* -------------------------------
+   HEADER
+--------------------------------- */
 .header {
-    height: 60px;
+    height: 80px;
     background-color: #2c3e50;
     color: #fff;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center; /* center content horizontally */
+    align-items: center;     /* center content vertically */
     padding: 0 20px;
-    box-sizing: border-box; /* Include padding in the height calculation */
+    box-sizing: border-box;
 }
 
-/* FOOTER */
+/* LEFT: logo + heading */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Logo styling */
+.header-logo-link {
+    display: inline-block;
+}
+
+.header-logo {
+    height: 60px;          /* smaller than header height */
+    width: 60px;           /* make it square for perfect circle */
+    border-radius: 50%;    /* makes logo round */
+    border: 2px solid #ffffff; /* white border */
+    object-fit: cover;     /* keep image aspect ratio */
+    display: block;
+}
+
+/* Header text styling */
+.header-title {
+    font-size: 24px;
+    margin: 0;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* RIGHT: user info and logout button */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: absolute; /* keep on right */
+    right: 20px;
+}
+
+.header-user {
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.header-logout-btn {
+    background-color: transparent;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-logout-btn:hover {
+    background-color: #ffffff;
+    color: #2c3e50;
+    border-color: #ffffff;
+}
+
+
+/* -------------------------------
+   FOOTER
+--------------------------------- */
 .footer {
     height: 57px;
     padding-top: 1px;
     background-color: #2c3e50;
     color: #fff;
     text-align: center;
-    line-height: 40px; /* Aligns content vertically */
+    line-height: 40px; /* Vertical alignment */
     width: 100%;
     box-sizing: border-box;
 }
 
-/* MAIN CONTENT LAYOUT */
+/* -------------------------------
+   MAIN CONTAINER
+--------------------------------- */
 .main-container {
     display: flex;
-    /* Dynamically calculate the remaining height: 100vh - header(60px) - footer(56px) = 116px */
-    min-height: calc(100vh - 117px); 
-    /* 117px used as 116px from calculation + 1px for safety margin/rounding */
+    min-height: calc(100vh - 117px); /* 100vh - header - footer */
 }
 
-/* CONTENT AREA */
+/* -------------------------------
+   CONTENT AREA
+--------------------------------- */
 .content {
-    flex: 1; /* Takes up all remaining horizontal space */
-    padding: 25px;
-    background-color: #ecf0f1;
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
 }
 
 /* ====================================
-   SIDEBAR MENU STYLES
+   SIDEBAR MENU
    ==================================== */
-
-/* --- Base Sidebar Styles --- */
 .sidebar {
     width: 250px;
-    background-color: #2c3e50; /* Dark background */
+    background-color: #2c3e50;
     color: #ecf0f1;
     font-family: Arial, sans-serif;
-    min-height: 100%; /* Takes full height of .main-container */
+    min-height: 100%;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    padding-top: 10px; /* Added padding to the top of the sidebar */
+    padding-top: 10px;
     box-sizing: border-box;
-    overflow-y: auto; /* Allows scrolling if menu exceeds height */
+    overflow-y: auto;
+    flex-shrink: 0;
 }
 
 .menu {
@@ -76,7 +144,6 @@
     margin: 0;
 }
 
-/* --- Menu Item and Link Styles --- */
 .menu-item {
     border-bottom: 1px solid #34495e;
 }
@@ -93,88 +160,54 @@
     transition: background-color 0.2s, color 0.2s;
 }
 
-/* Hover effect for all links */
 .menu-item a:hover {
-    background-color: #3498db; /* Primary blue for hover */
+    background-color: #3498db;
     color: #ffffff;
 }
 
-/* Style for the link that toggles a submenu */
-.submenu-toggle {
-    cursor: pointer;
-    font-weight: bold;
-}
+/* Submenu toggle and arrow */
+.submenu-toggle { cursor: pointer; font-weight: bold; }
+.menu-item.open > .submenu-toggle { background-color: #2980b9; }
 
-/* Highlight the active toggle link */
-.menu-item.open > .submenu-toggle {
-    background-color: #2980b9;
-}
-
-/* --- Arrow Styling and Rotation --- */
 .arrow {
     float: right;
     display: inline-block;
     transition: transform 0.2s ease;
-    font-size: 1.2em; 
+    font-size: 1.2em;
     line-height: 1;
 }
 
-/* Rotate the arrow when the parent menu item is open */
 .has-submenu.open > a .arrow {
     transform: rotate(90deg);
 }
 
-/* --- Submenu Collapse/Expand Styles --- */
+/* Submenu collapse/expand */
 .submenu {
     list-style: none;
     padding: 0;
     margin: 0;
-    background-color: #34495e; /* Slightly darker submenu background */
-    max-height: 0; /* Key for smooth collapse/expand */
-    overflow: hidden; /* Hide overflow content */
-    transition: max-height 0.3s ease-in-out;
-}
-
-/* State when the submenu is open/active */
-.menu-item.open > .submenu {
-    max-height: 1000px; /* Sufficiently large value to show all sub-content */
-    transition: max-height 0.3s ease-in-out;
-}
-
-
-/* --- Submenu Level Indentation and Styling --- */
-
-/* Level 2 Submenu Links */
-.submenu .menu-item a {
-    padding-left: 30px; /* Indentation for Level 2 */
-    font-weight: normal;
     background-color: #34495e;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
 }
 
-.submenu .menu-item a:hover {
-    background-color: #3a536b;
+.menu-item.open > .submenu {
+    max-height: 1000px;
+    transition: max-height 0.3s ease-in-out;
 }
 
-/* Level 3 Submenu Container (.child-menu) */
-.submenu .child-menu {
-    margin-left: 10px; /* MOVED 10px RIGHT */
-}
+/* Submenu levels */
+.submenu .menu-item a { padding-left: 30px; font-weight: normal; background-color: #34495e; }
+.submenu .menu-item a:hover { background-color: #3a536b; }
 
-/* Level 3 Submenu Links */
-.submenu .child-menu .menu-item a {
-    /* Adjusted padding-left based on the 10px container margin to maintain visual offset */
-    padding-left: 45px; /* Indentation for Level 3 */
-    background-color: #3a536b;
-}
-
-.submenu .child-menu .menu-item a:hover {
-    background-color: #466079;
-}
+.submenu .child-menu { margin-left: 10px; }
+.submenu .child-menu .menu-item a { padding-left: 45px; background-color: #3a536b; }
+.submenu .child-menu .menu-item a:hover { background-color: #466079; }
 
 /* ====================================
-   AUTHENTICATION FORM STYLES
+   AUTHENTICATION FORM
    ==================================== */
-
 .auth-body {
     display: flex;
     justify-content: center;
@@ -196,7 +229,7 @@
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
-    box-sizing: border-box; /* Crucial for full-width inputs with padding */
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
@@ -216,40 +249,127 @@
     background-color: #1a252f;
 }
 
-/* MESSAGES */
+/* Messages */
 .msg-box {
     margin-top: 15px;
     padding: 12px;
-    background-color: #f8d7da; /* Light red/pink for errors/messages */
-    color: #721c24; /* Dark red text */
+    background-color: #f8d7da;
+    color: #721c24;
     border-radius: 6px;
     border: 1px solid #f5c6cb;
 }
 
 /* ====================================
-   TABLE STYLES
+   TABLE STYLING
    ==================================== */
-   .table th, .table td {
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
     vertical-align: middle !important;
+    font-size: 0.85rem;
+    padding: 6px 8px;
 }
 
 .table th:nth-child(1),
-.table td:nth-child(1) {
-    width: 60px;
-}
-
+.table td:nth-child(1) { width: 50px; } /* SL */
+.table th:nth-child(2),
+.table td:nth-child(2) { width: 120px; } /* Company Id */
+.table th:nth-child(4),
+.table td:nth-child(4) { width: 140px; } /* Type Name */
 .table th:nth-child(5),
-.table td:nth-child(5),
+.table td:nth-child(5) { width: 180px; } /* Email */
 .table th:nth-child(6),
-.table td:nth-child(6),
+.table td:nth-child(6) { width: 120px; } /* Phone */
 .table th:nth-child(7),
-.table td:nth-child(7) {
-    width: 100px;
+.table td:nth-child(7) { width: 180px; } /* Address */
+.table th:nth-child(8),
+.table td:nth-child(8) { width: 140px; } /* Domain */
+.table th:nth-child(9),
+.table td:nth-child(9) { width: 100px; } /* Logo */
+.table th:nth-child(10),
+.table td:nth-child(10) { width: 140px; } /* Action */
+
+.table-responsive { overflow-x: auto; }
+
+/* Table hover */
+#companyDetailTableBody tr {
+    transition: background-color 0.2s ease;
+}
+#companyDetailTableBody tr.selected-row {
+    background-color: #d1e7ff !important;
+    font-weight: bold;
 }
 
-.table th:nth-child(8),
-.table td:nth-child(8) {
-    width: 140px;
+/* ====================================
+   MODAL STYLING
+   ==================================== */
+.modal-header.bg-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.modal-xl {
+    max-width: 95%;
+}
+
+.modal-xl input, .modal-xl select {
+    font-size: 0.85rem;
+}
+
+/* FORM ELEMENTS IN MODAL */
+input, select {
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+
+/* ====================================
+   BUTTON STYLING
+   ==================================== */
+.btn {
+    font-size: 0.85rem;
+}
+
+.btn-primary { background-color: #3498db; border-color: #3498db; }
+.btn-primary:hover { background-color: #2980b9; border-color: #2980b9; }
+
+.btn-info { background-color: #17a2b8; border-color: #17a2b8; }
+.btn-warning { background-color: #ffc107; border-color: #ffc107; }
+.btn-danger { background-color: #dc3545; border-color: #dc3545; }
+
+/* ====================================
+   TEXT ALIGNMENT
+   ==================================== */
+.text-end { text-align: right !important; }
+.text-center { text-align: center !important; }
+
+/* ====================================
+   RESPONSIVE FIXES
+   ==================================== */
+@media (max-width: 768px) {
+    .table-responsive { font-size: 0.8rem; overflow-x: auto; }
+    .btn { font-size: 0.8rem; }
+    .content { margin-left: 0; padding: 10px; }
+}
+
+#edit_medicineListTableBody tr.selected-row td{
+    background:#ffe08a !important;
+    color:#000 !important;
+    font-weight:800 !important;
+    border-color:#e6b800 !important;
+}
+
+
+
+.main-container.no-sidebar .sidebar {
+    display: none;
+}
+.main-container.no-sidebar .content {
+    flex: 1;
 }
 
 /* Hover & selection for JS-driven table */
@@ -358,4 +478,3 @@ input, select {
     font-weight:800 !important;
     border-color:#e6b800 !important;
 }
-

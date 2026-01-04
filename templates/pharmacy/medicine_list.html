@@ -171,6 +171,11 @@ $(document).ready(function () {
         $("#location").focus();
         return;
     }
+    if(!supplier){
+        alert("Please enter supplier.");
+        $("#supplier").focus();
+        return;
+    }
 
     if(!method){
         alert("Please select payment method.");
@@ -236,6 +241,45 @@ $(document).ready(function () {
             }
         });
     });
+
+$("#addProductBtn").on("click", function(e){
+    e.preventDefault();
+
+    let pname = $("#productSearch").val().trim();
+    let price = parseFloat($("#price").val()) || 0;
+    let qty   = parseFloat($("#quantity").val()) || 0;
+    let total = price * qty;
+
+    if(!pname){
+        alert("Please select a product.");
+        return;
+    }
+
+    if(price <= 0 || qty <= 0){
+        alert("Price and quantity must be greater than 0.");
+        return;
+    }
+
+    // Append to selected medicines table
+    $("#selectedMedicineList").append(`
+        <tr>
+            <td>${$("#selectedMedicineList tr").length + 1}</td>
+            <td>${pname}</td>
+            <td>${qty}</td>
+            <td>${price.toFixed(2)}</td>
+            <td>${total.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm remove-item">Remove</button></td>
+        </tr>
+    `);
+
+    // Reset product input
+    $("#productSearch").val("");
+    $("#quantity").val("");
+    $("#price").val("");
+    $("#productSearch").focus();
+
+    updateInvoiceSummary(); // recalc invoice
+});
 
     let editProducts = [];
     let editCurrentIndex = -1;

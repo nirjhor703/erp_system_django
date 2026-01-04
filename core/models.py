@@ -163,7 +163,7 @@ class CompanyDetails(models.Model):
     address = models.CharField(max_length=255, blank=True, null=True)
     website = models.CharField(max_length=255, blank=True, null=True)
     domain = models.CharField(max_length=255, blank=True, null=True)
-    logo = models.CharField(max_length=255, blank=True, null=True)
+    logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     status = models.IntegerField(db_comment='1 for Active 0 for Inactive')
     added_at = models.DateTimeField()
     updated_at = models.DateTimeField(blank=True, null=True)

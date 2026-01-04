@@ -5,7 +5,7 @@ $(document).ready(function () {
     });
 
     let products = [];
-    let currentIndex = -1;
+    let currentIndex = 0;
     let offset = 0;
     let query = "";
 
@@ -58,10 +58,15 @@ $(document).ready(function () {
             row[0].scrollIntoView({ behavior: "smooth", block: "center" });
         }
     }
+
+
     // Click on any row → fill product name and price
 $(document).on("click", "#medicineListTableBody tr", function () {
     let index = $(this).data("index");
     if (index === undefined) return;
+    currentIndex = index;
+    highlightRow();
+
 
     // Get selected product from products array
     let selectedProduct = products[index];
@@ -79,6 +84,7 @@ $(document).on("click", "#medicineListTableBody tr", function () {
 
     // Focus quantity field for quick entry
     $("#quantity").focus();
+    
 });
 
 
@@ -389,15 +395,22 @@ $("#perPage").on("change", function(){
     });
 });
 
- function loadSuppliers(selectedId = null) {
-        $.get("/get_suppliers/", function(res){
-            let options = `<option value="">Select Supplier</option>`;
-            res.suppliers.forEach(s => {
-                options += `<option value="${s.id}" ${s.id == selectedId ? "selected" : ""}>${s.name}</option>`;
-            });
-            $("#supplier").html(options);
+function loadSuppliers(selectedId = null) {
+    $.get("/get_suppliers/", function (res) {
+        let options = `<option value="">Select Supplier</option>`;
+
+        res.suppliers.forEach(s => {
+            options += `
+                <option value="${s.id}" ${s.id == selectedId ? "selected" : ""}>
+                    ${s.name}
+                </option>
+            `;
         });
-    }
+
+        $("#supplier").html(options);
+    });
+}
+
 // function openEditModal(tran_id){
 //     $.get("/transaction/get/"+tran_id, function(res){
 
@@ -434,7 +447,3 @@ $("#perPage").on("change", function(){
 //         $("#verifyModal").modal("show");
 //     });
 // }
-
-
-
-
