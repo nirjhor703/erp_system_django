@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h3>Admin Details</h3>
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">
+    Add Admin
+</button>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>SL</th>
+                <th>Admin ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Store</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="adminTableBody">
+            {% for a in admins %}
+            <tr data-id="{{ a.id }}">
+                <td>{{ forloop.counter }}</td>
+                <td class="ad-user-id">{{ a.user_id }}</td>
+                <td class="ad-name">{{ a.user_name }}</td>
+                <td class="ad-email">{{ a.user_email }}</td>
+                <td class="ad-phone">{{ a.user_phone }}</td>
+                <td class="ad-image">
+                    {% if a.image %}
+                        <img src="{{ a.image.url|default:a.image }}" style="height:40px;">
+                    {% else %}
+                        No Image
+                    {% endif %}
+                </td>
+                <td class="ad-status">{{ a.status|yesno:"Active,Inactive" }}</td>
+                <td class="ad-store">{{ a.store_id }}</td>
+                <td>
+                    <button class="btn btn-sm btn-info edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-btn">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ================= ADD MODAL ================= -->
+<div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content p-4">
+            <h5 class="mb-3">Add Admin</h5>
+
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+            <div class="mb-2">
+                <label for="addName" class="form-label">Name *</label>
+                <input id="addName" class="form-control" placeholder="Enter name">
+            </div>
+
+            <div class="mb-2">
+                <label for="addEmail" class="form-label">Email *</label>
+                <input id="addEmail" class="form-control" placeholder="Enter email">
+            </div>
+
+            <div class="mb-2">
+                <label for="addPhone" class="form-label">Phone *</label>
+                <input id="addPhone" class="form-control" placeholder="Enter phone">
+            </div>
+
+            <div class="mb-2">
+                <label for="addStore" class="form-label">Store</label>
+                <select id="addStore" class="form-select">
+                    <option value="">-- Select --</option>
+                    {% for store in stores %}
+                    <option value="{{ store.id }}">{{ store.store_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="mb-2">
+                <label for="addPassword" class="form-label">Password *</label>
+                <input id="addPassword" type="password" class="form-control" placeholder="Enter password">
+            </div>
+
+            <div class="mb-2">
+                <label for="addConfirmPassword" class="form-label">Confirm Password *</label>
+                <input id="addConfirmPassword" type="password" class="form-control" placeholder="Confirm password">
+            </div>
+
+            <div class="mb-3">
+                <label for="addImage" class="form-label">Image</label>
+                <input type="file" id="addImage" class="form-control">
+            </div>
+
+            <button id="addSaveBtn" class="btn btn-success">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content p-4">
+            <h5 class="mb-3">Edit Admin</h5>
+
+            <input type="hidden" id="editId">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+            <div class="mb-2">
+                <label for="editName" class="form-label">Name *</label>
+                <input id="editName" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label for="editEmail" class="form-label">Email *</label>
+                <input id="editEmail" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label for="editPhone" class="form-label">Phone *</label>
+                <input id="editPhone" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label for="editStore" class="form-label">Store</label>
+                <select id="editStore" class="form-select">
+                    <option value="">-- Select --</option>
+                    {% for store in stores %}
+                    <option value="{{ store.id }}">{{ store.store_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+
+            <div class="mb-2">
+                <label for="editPassword" class="form-label">Password</label>
+                <input id="editPassword" type="password" class="form-control" placeholder="Enter new password if changing">
+            </div>
+
+            <div class="mb-2">
+                <label for="editConfirmPassword" class="form-label">Confirm Password</label>
+                <input id="editConfirmPassword" type="password" class="form-control" placeholder="Confirm new password">
+            </div>
+
+            <div class="mb-3">
+                <label for="editImage" class="form-label">Image</label>
+                <input type="file" id="editImage" class="form-control">
+            </div>
+
+            <button id="editSaveBtn" class="btn btn-primary">Update</button>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/users/admin.js' %}"></script>
+{% endblock %}
+
+{% endblock %}
