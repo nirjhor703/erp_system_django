@@ -149,6 +149,63 @@ $(document).ready(function () {
     // -------------------------
     $("#SubmitBtn").on("click", function (e) {
         e.preventDefault();
+        
+    let store    = $("#store").val();
+    let location = $("#location").val().trim();
+    let supplier = $("#supplier").val().trim();
+    let method   = $("#payment_method").val();
+
+    let invoice  = parseFloat($("#invoiceAmount").val()) || 0;
+    let discount = parseFloat($("#discount").val()) || 0;
+    let net      = parseFloat($("#netAmount").val()) || 0;
+    let advance  = parseFloat($("#advanced").val()) || 0;
+    let balance  = parseFloat($("#balance").val()) || 0;
+
+        if(!store){
+        alert("Please select a store.");
+        return;
+    }
+
+    if(!location){
+        alert("Please enter location.");
+        $("#location").focus();
+        return;
+    }
+    if(!supplier){
+        alert("Please enter supplier.");
+        $("#supplier").focus();
+        return;
+    }
+
+    if(!method){
+        alert("Please select payment method.");
+        return;
+    }
+
+    if(invoice <= 0){
+        alert("Invoice amount must be greater than 0.");
+        return;
+    }
+
+    if(discount < 0 || discount > 100){
+        alert("Discount must be between 0–100%");
+        return;
+    }
+
+    if(net <= 0){
+        alert("Net amount is invalid.");
+        return;
+    }
+
+    if(advance < 0){
+        alert("Advance cannot be negative.");
+        return;
+    }
+
+    if(balance < 0){
+        alert("Balance cannot be negative.");
+        return;
+    }
 
         let store    = $("#store").val();
     let location = $("#location").val().trim();
@@ -236,6 +293,45 @@ $(document).ready(function () {
             }
         });
     });
+
+$("#addProductBtn").on("click", function(e){
+    e.preventDefault();
+
+    let pname = $("#productSearch").val().trim();
+    let price = parseFloat($("#price").val()) || 0;
+    let qty   = parseFloat($("#quantity").val()) || 0;
+    let total = price * qty;
+
+    if(!pname){
+        alert("Please select a product.");
+        return;
+    }
+
+    if(price <= 0 || qty <= 0){
+        alert("Price and quantity must be greater than 0.");
+        return;
+    }
+
+    // Append to selected medicines table
+    $("#selectedMedicineList").append(`
+        <tr>
+            <td>${$("#selectedMedicineList tr").length + 1}</td>
+            <td>${pname}</td>
+            <td>${qty}</td>
+            <td>${price.toFixed(2)}</td>
+            <td>${total.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm remove-item">Remove</button></td>
+        </tr>
+    `);
+
+    // Reset product input
+    $("#productSearch").val("");
+    $("#quantity").val("");
+    $("#price").val("");
+    $("#productSearch").focus();
+
+    updateInvoiceSummary(); // recalc invoice
+});
 
     let editProducts = [];
     let editCurrentIndex = -1;

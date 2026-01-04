@@ -372,8 +372,6 @@ input, select {
     flex: 1;
 }
 
-
-
 /* Hover & selection for JS-driven table */
 #medicineListTableBody tr {
     cursor: pointer;
@@ -478,5 +476,5 @@ input, select {
     background:#ffe08a !important;
     color:#000 !important;
     font-weight:800 !important;
-    border-color:#e6b800 !important;
+    border-color:#e6b800 !important; 
 }

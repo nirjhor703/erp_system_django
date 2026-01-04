@@ -43,6 +43,14 @@ INSTALLED_APPS = [
     'pharmacy',
     'users',
     'permissions',
+    'location',
+    'bank',
+    'store',
+    'payment_method',
+    'main_heads',
+    'transaction_group',
+    # 'transaction_heads',
+    'corporates',
 ]
 
 MIDDLEWARE = [
