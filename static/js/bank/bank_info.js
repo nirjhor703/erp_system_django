@@ -92,4 +92,21 @@ $(document).on("click",".deleteBtn",function(){
         });
     }
 });
+
+// $("#divisionSelect").on("change", function () {
+//     let division = $(this).val();
+
+//     $("#locationSelect").html(`<option value="">Loading...</option>`);
+
+//     if (!division) return;
+
+//     $.get("/bank/get-locations/", { division: division }, function (res) {
+//         let options = `<option value="">Select Location</option>`;
+//         res.locations.forEach(l => {
+//             options += `<option value="${l.id}">${l.name}</option>`;
+//         });
+//         $("#locationSelect").html(options);
+//     });
+// });
+
 });

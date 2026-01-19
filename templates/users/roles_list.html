@@ -6,15 +6,26 @@
 <div class="container-fluid mt-4">
     <h2>Roles</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Role</button>
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" class="form-control w-25 global-search" placeholder="Search...">
+  </div>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
+        <table class="table table-bordered table-hover filter-table">
+            <thead class="table-white">
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Status</th>
                     <th>Action</th>
+                </tr>
+                <tr class="filter-row">
+                    <th></th>
+                    
+                    <th><input class="form-control column-filter" data-col="1" placeholder="Search Name"></th>
+                    <th><input class="form-control column-filter" data-col="2" placeholder="Search Status"></th>
+                    
+                    <th></th>
                 </tr>
             </thead>
             <tbody id="rolesTableBody">
@@ -108,6 +119,7 @@
 <!-- jQuery first -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/users/roles.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 {% endblock %}
 
 {% endblock %}

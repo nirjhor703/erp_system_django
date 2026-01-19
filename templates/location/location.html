@@ -14,7 +14,7 @@
 </button>
 
 <!-- Right Search -->
-<input type="text" id="searchInput" class="form-control w-25" placeholder="Search...">
+<input type="text" id="searchInput" class="form-control w-25 global-search" placeholder="Search...">
 
 </div>
 
@@ -25,7 +25,7 @@
 
 <div class="card-body">
 
-<table class="table table-bordered table-hover">
+<table class="table table-bordered table-hover filter-table">
 <thead class="text-center">
 <tr>
 <th width="60">SL</th>
@@ -33,6 +33,13 @@
 <th width="30%">District</th>
 <th width="30%">Upazila</th>
 <th width="120">Action</th>
+</tr>
+<tr class="filter-row">
+    <th></th>
+    <th><input class="form-control column-filter" data-col="1" placeholder="Search Division"></th>
+    <th><input class="form-control column-filter" data-col="2" placeholder="Search District"></th>
+    <th><input class="form-control column-filter" data-col="3" placeholder="Search Upazila"></th>
+    <th></th>
 </tr>
 </thead>
 
@@ -118,6 +125,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="{% static 'js/location/location_info.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 
 {% endblock %}
 

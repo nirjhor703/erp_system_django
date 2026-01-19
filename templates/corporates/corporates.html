@@ -4,12 +4,12 @@
 
 <div class="d-flex justify-content-between mb-3">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">+ Add Corporate</button>
-    <input type="text" id="search" placeholder="Search..." class="form-control w-25">
+    <input type="text" id="search" placeholder="Search..." class="form-control w-25 global-search">
 </div>
 
 <h4 class="text-center mb-3">Corporate Price</h4>
 
-<table class="table table-bordered">
+<table class="table table-bordered filter-table">
     <thead>
         <tr>
             <th>SL</th>
@@ -17,6 +17,15 @@
             <th>Discount Rate</th>
             <th>Action</th>
         </tr>
+
+    <tr class="filter-row">
+        <th></th>
+        
+            <th><input class="form-control column-filter" data-col="1" placeholder="Search Corporate Name"></th>
+            <th><input class="form-control column-filter" data-col="2" placeholder="Search Discount Rate"></th>
+        <th></th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
     {% for corp in corporates %}
@@ -93,4 +102,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script src="{% static 'js/corporates/corporate_info.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 {% endblock %}

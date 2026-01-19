@@ -293,7 +293,7 @@
 
         <!-- PHARMACY -->
         <li class="menu-item has-submenu">
-            <a href="#" class="submenu-toggle">PHARMACY <span class="arrow">›</span></a>
+            <a href="{% url 'set_module' 6 %}" class="submenu-toggle">PHARMACY <span class="arrow">›</span></a>
 
             <ul class="submenu">
 
@@ -301,9 +301,12 @@
                 <li class="menu-item has-submenu">
                     <a href="#" class="submenu-toggle">Setup <span class="arrow">›</span></a>
                     <ul class="submenu child-menu">
-                        <li><a href="#">Category</a></li>
-                        <li><a href="#">Brand</a></li>
-                        <li><a href="#">Unit</a></li>
+                        <li><a href="{% url 'set_module' 6 %}?next={% url 'manufacturer_list' %}">Item Manufacturer</a></li>
+                        <li><a href="{% url 'set_module' 6 %}?next={% url 'category_list' %}">Item Category</a></li>
+                        <li><a href="{% url 'set_module' 6 %}?next={% url 'unit_list' %}">Item Unit</a></li>
+                        <li><a href="{% url 'set_module' 6 %}?next={% url 'form_list' %}">Item Form</a></li>
+                        <li><a href="#">Item Groupe</a></li>
+                        <li><a href="#">Pharmacy Products</a></li>
                     </ul>
                 </li>
 
