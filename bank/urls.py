@@ -8,4 +8,6 @@ urlpatterns = [
     path('bank/fetch/', views.bank_fetch, name='bank_fetch'),
     path('bank/update/', views.bank_update, name='bank_update'),
     path('bank/delete/', views.bank_delete, name='bank_delete'),
+    
+
 ]

@@ -5,6 +5,12 @@ from django.utils import timezone
 from .models import UserInfos
 from django.contrib.auth.hashers import make_password, check_password
 
+def set_module(request, module_id):
+    request.session['active_module'] = module_id
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+
 def register_view(request):
     if request.method == "POST":
         full_name = request.POST.get("full_name")

@@ -13,4 +13,6 @@ urlpatterns = [
 
     # Optional: default root redirects to login
     path('', views.login_view),
+    path('set-module/<int:module_id>/', views.set_module, name='set_module'),
+
 ]

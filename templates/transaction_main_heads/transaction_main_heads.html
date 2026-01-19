@@ -4,14 +4,21 @@
 
 <h3>Transaction Main Head Details</h3>
 
-<input type="text" class="form-control w-25 mb-3" placeholder="Search...">
+<input type="text" class="form-control w-25 mb-3 global-search" placeholder="Search...">
 
-<table class="table table-bordered">
+<table class="table table-bordered filter-table">
 <thead>
 <tr>
-    <th>SL</th>
-    <th>Type Name</th>
-    <th>Action</th>
+    <th style="width:10%">SL</th>
+    <th style="width:75%">Type Name</th>
+    <th style="width:15%">Action</th>
+</tr>
+<tr class="filter-row">
+    <th></th>
+    <th>
+        <input class="form-control column-filter" data-col="1" placeholder="Search Type">
+    </th>
+    <th></th>
 </tr>
 </thead>
 <tbody>
@@ -51,4 +58,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="{% static 'js/transaction_main_heads/transaction_main_heads.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 {% endblock %}

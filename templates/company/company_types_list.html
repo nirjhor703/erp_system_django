@@ -5,25 +5,34 @@
 <div class="container-fluid mt-4">
     <h2>Company Types</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Company Type</button>
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" class="form-control w-25 global-search" placeholder="Search...">
+  </div>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
+        <table class="table table-bordered table-hover filter-table">
+            <thead class="table-white">
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
+
+                <!-- Correct filter row -->
+                <tr class="filter-row">
+                    <th></th> <!-- ID column -->
+                    <th><input class="form-control column-filter" data-col="1" placeholder="Search Name"></th>
+                    <th><input class="form-control column-filter" data-col="2" placeholder="Search Status"></th>
+                    <th></th> <!-- Action column -->
+                </tr>
             </thead>
             <tbody id="companyTypeTableBody">
                 {% for ct in company_types %}
                 <tr data-id="{{ ct.id }}">
                     <td>{{ ct.id }}</td>
-                    <td class="ct-name">{{ ct.name }}</td>
-                    <td class="ct-status">
-                        {% if ct.status == 1 %} Active {% else %} Inactive {% endif %}
-                    </td>
+                    <td>{{ ct.name }}</td>
+                    <td>{% if ct.status == 1 %}Active{% else %}Inactive{% endif %}</td>
                     <td>
                         <button class="btn btn-sm btn-info edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
                         <button class="btn btn-sm btn-danger delete-btn">Delete</button>
@@ -32,6 +41,7 @@
                 {% endfor %}
             </tbody>
         </table>
+
     </div>
 
     <!-- Pagination -->
@@ -107,6 +117,7 @@
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/company_types.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 {% endblock %}
 
 {% endblock %}

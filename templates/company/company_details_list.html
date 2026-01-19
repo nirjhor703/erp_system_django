@@ -6,10 +6,13 @@
 <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">
     Add Company
 </button>
+<div class="d-flex justify-content-between mb-3">
+        <input type="text" class="form-control w-25 global-search" placeholder="Search...">
+  </div>
 
 <div class="table-responsive">
-<table class="table table-bordered table-sm">
-    <thead class="table-dark">
+<table class="table table-bordered table-sm filter-table">
+    <thead class="table-white">
         <tr>
             <th>SL</th>
             <th>Company ID</th>
@@ -22,6 +25,19 @@
             <th>Logo</th>
             <th>Action</th>
         </tr>
+        <tr class="filter-row">
+        <th></th>
+        
+            <th><input class="form-control column-filter" data-col="1" placeholder="Search Company Id"></th>
+            <th><input class="form-control column-filter" data-col="2" placeholder="Search Name"></th>
+            <th><input class="form-control column-filter" data-col="3" placeholder="Search Email"></th>
+            <th><input class="form-control column-filter" data-col="4" placeholder="Search Phone"></th>
+            <th><input class="form-control column-filter" data-col="5" placeholder="Search Address"></th>
+            <th><input class="form-control column-filter" data-col="6" placeholder="Search Domain"></th>
+
+        <th></th>
+        <th></th>
+    </tr>
     </thead>
     <tbody id="companyTableBody">
         {% for d in details %}
@@ -160,6 +176,7 @@
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/company_details.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 
 {% endblock %}
 

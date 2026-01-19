@@ -9,10 +9,12 @@ def transaction_groupe_page(request):
     groupes = TransactionGroupes.objects.filter(status=1).order_by('id')
     heads = TransactionMainHeads.objects.filter(status=1)
     companies = CompanyDetails.objects.filter(status=1)
+    methods = TransactionGroupes.objects.values_list('tran_method', flat=True).distinct()
     return render(request, 'transaction_groupes/transaction_groups.html', {
         'groupes': groupes,
         'heads': heads,
-        'companies': companies
+        'companies': companies,
+        "methods": methods
     })
 
 
