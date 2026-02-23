@@ -1,19 +1,35 @@
 $(function(){
+// When the add modal is shown
+$('#addModal').on('shown.bs.modal', function () {
+        $("#manufacturer_name").focus();
+    });
+
 
     /* ADD */
-    $("#addForm").submit(function(e){
-        e.preventDefault();
+$("#addForm").submit(function(e){
+    e.preventDefault();
 
-        $.post("/add_manufacturer/", $(this).serialize(), function(res){
-            if(res.status=="success"){
-                toastr.success("Manufacturer added successfully!");
-                $("#addModal").modal('hide');
-                setTimeout(()=>{ location.reload(); }, 1000);
-            } else {
-                toastr.error("Error adding manufacturer!");
-            }
-        });
+    let data = $(this).serializeArray();
+    data.push({name: 'rows', value: $("#rowsPerPageSelect").val() || 15});
+
+    $.post("/add_manufacturer/", $.param(data), function(res){
+        if(res.status=="success"){
+            toastr.success("Manufacturer added successfully!");
+            $("#addModal").modal('hide');
+
+            // Redirect to the last page
+            setTimeout(() => {
+                let rows = $("#rowsPerPageSelect").val() || 15;
+                window.location.href = window.location.pathname + "?page=" + res.last_page + "&rows=" + rows;
+            }, 500);
+        } else {
+            toastr.error(res.message || "Error adding manufacturer!");
+        }
     });
+});
+
+
+    
 
 
     /* EDIT LOAD */

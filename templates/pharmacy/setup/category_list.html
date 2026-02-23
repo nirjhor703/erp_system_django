@@ -19,6 +19,7 @@
     <th>SL</th>
     <th>Item Category Name</th>
     <th>Company Name</th>
+    <th>Group Name</th>
     <th width="120">Action</th>
 </tr>
 <tr class="filter-row">
@@ -48,6 +49,8 @@
     <td>{{ forloop.counter0|add:categories.start_index }}</td>
     <td>{{ c.category_name }}</td>
     <td>{% if c.company %}{{ c.company.company_name }}{% else %}-{% endif %}</td>
+    <td>{% if c.group %}{{ c.group.tran_groupe_name }}{% else %}-{% endif %}</td>
+
     <td>
         <button class="btn btn-sm btn-primary editBtn" data-id="{{ c.id }}">Edit</button>
         <button class="btn btn-sm btn-danger deleteBtn" data-id="{{ c.id }}">Delete</button>
@@ -89,13 +92,16 @@
 </div>
 
 <!-- ADD MODAL -->
-<div class="modal fade" id="addModal">
+<div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog">
 <form id="addForm" class="modal-content">{% csrf_token %}
-<div class="modal-header"><h5>Add Item Category</h5></div>
+<div class="modal-header">
+    <h5 class="modal-title">Add Item Category</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
 <div class="modal-body">
     <label>Item Category Name *</label>
-    <input name="category_name" class="form-control mb-2" required>
+    <input name="category_name" id="category_name" class="form-control mb-2" required>
 
     <label>Company *</label>
     <select name="company" class="form-control mb-2" required>
@@ -113,6 +119,15 @@
         <option value="{{t.id}}">{{ t.type_name }}</option>
         {% endfor %}
     </select>
+
+    <label>Group</label>
+    <select name="group" class="form-control mb-2">
+        <option value="">Select Group</option>
+        {% for g in groups %}
+        <option value="{{g.id}}">{{ g.tran_groupe_name }}</option>
+        {% endfor %}
+    </select>
+
 </div>
 <div class="modal-footer"><button class="btn btn-success">Submit</button></div>
 </form>
@@ -120,11 +135,14 @@
 </div>
 
 <!-- EDIT MODAL -->
-<div class="modal fade" id="editModal">
+<div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog">
 <form id="editForm" class="modal-content">{% csrf_token %}
 <input type="hidden" name="id" id="edit_id">
-<div class="modal-header"><h5>Edit Item Category</h5></div>
+<div class="modal-header">
+    <h5 class="modal-title">Edit Item Category</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
 <div class="modal-body">
     <label>Item Category Name *</label>
     <input id="edit_name" name="category_name" class="form-control mb-2" required>
@@ -145,6 +163,15 @@
         <option value="{{t.id}}">{{ t.type_name }}</option>
         {% endfor %}
     </select>
+
+    <label>Group</label>
+    <select id="edit_group" name="group" class="form-control mb-2">
+        <option value="">Select Group</option>
+        {% for g in groups %}
+        <option value="{{g.id}}">{{ g.tran_groupe_name }}</option>
+        {% endfor %}
+    </select>
+
 </div>
 <div class="modal-footer"><button class="btn btn-primary">Update</button></div>
 </form>

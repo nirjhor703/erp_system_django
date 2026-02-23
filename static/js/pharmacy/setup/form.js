@@ -1,16 +1,21 @@
 $(function(){
-
-    /* ADD */
-    $("#addForm").submit(function(e){
-        e.preventDefault();
-        $.post("/add_form/", $(this).serialize(), function(res){
-            if(res.status=="success"){
-                location.reload();
-            } else {
-                alert(res.message);
-            }
-        });
+$('#addModal').on('shown.bs.modal', function () {
+        $("#form_name").focus();
     });
+    /* ADD */
+$("#addForm").submit(function(e){
+    e.preventDefault();
+
+    $.post("/add_form/", $(this).serialize(), function(res){
+        if(res.status=="success"){
+            // Redirect to last page
+            window.location.href = window.location.pathname + "?page=" + res.last_page;
+        } else {
+            alert(res.message || "Error adding form");
+        }
+    });
+});
+
 
     /* EDIT LOAD */
     $(".editBtn").click(function(){

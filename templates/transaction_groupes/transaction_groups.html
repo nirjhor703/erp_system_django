@@ -74,7 +74,7 @@
 </table>
 
 <!-- ADD MODAL -->
-<div class="modal fade" id="addModal">
+<div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog">
 <form id="addForm" class="modal-content">
 {% csrf_token %}
@@ -110,7 +110,7 @@
 </div>
 
 <!-- EDIT MODAL -->
-<div class="modal fade" id="editModal">
+<div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog">
 <form id="editForm" class="modal-content">
 {% csrf_token %}

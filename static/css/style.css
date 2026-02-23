@@ -457,6 +457,8 @@ input, select {
     vertical-align: middle;
 }
 
+
+
 .remove-item {
     font-size: 0.85rem;
     padding: 2px 6px;
@@ -472,9 +474,31 @@ input, select {
     }
 }
 
-#edit_medicineListTableBody tr.selected-row td{
-    background:#ffe08a !important;
-    color:#000 !important;
-    font-weight:800 !important;
-    border-color:#e6b800 !important; 
+#edit_selectedMedicineList {
+    width: 100%;
+}
+
+/* Ensure inputs inside table take full width of their cell */
+#edit_selectedMedicineList input {
+    width: 100%;
+    box-sizing: border-box; /* padding + border include kore width */
+    padding: 2px 5px;
+    font-size: 0.9rem;
+}
+
+/* Optional: table styling */
+#edit_selectedMedicineList td, #edit_selectedMedicineList th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* Make table horizontally scrollable if needed */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Buttons */
+.editRemoveBtn {
+    padding: 2px 6px;
+    font-size: 0.8rem;
 }

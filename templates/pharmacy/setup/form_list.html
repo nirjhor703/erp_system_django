@@ -79,13 +79,16 @@
 </div>
 
 <!-- ADD MODAL -->
-<div class="modal fade" id="addModal">
+<div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <form id="addForm" class="modal-content">{% csrf_token %}
-            <div class="modal-header"><h5>Add Item Form</h5></div>
+            <div class="modal-header">
+                <h5 class="modal-title">Add Item Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <div class="modal-body">
                 <label>Item Form Name *</label>
-                <input name="form_name" class="form-control mb-2" required>
+                <input name="form_name" id="form_name" class="form-control mb-2" required>
 
                 <label>Company *</label>
                 <select name="company" class="form-control mb-2" required>
@@ -103,11 +106,14 @@
 </div>
 
 <!-- EDIT MODAL -->
-<div class="modal fade" id="editModal">
+<div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <form id="editForm" class="modal-content">{% csrf_token %}
             <input type="hidden" name="id" id="edit_id">
-            <div class="modal-header"><h5>Edit Item Form</h5></div>
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Item Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <div class="modal-body">
                 <label>Item Form Name *</label>
                 <input id="edit_name" name="form_name" class="form-control mb-2" required>

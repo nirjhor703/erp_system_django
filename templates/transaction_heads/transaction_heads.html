@@ -2,130 +2,259 @@
 {% load static %}
 {% block content %}
 
-<div class="d-flex justify-content-between mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">+ Add Transaction Head</button>
-    <input class="form-control w-25" placeholder="Search...">
+<div class="card">
+    <!-- TOP BAR -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+        + Add Transaction Head
+    </button>
+    <div class="d-flex gap-2 align-items-center">
+        <label class="mb-0">Show</label>
+        <select id="pageSize" class="form-select form-select-sm" style="width:80px">
+            <option value="15" selected>15</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+        </select>
+    </div>
+    <input type="text" class="form-control w-25 global-search" placeholder="Search...">
 </div>
 
-<h4 class="text-center mb-3">Transaction Head Details</h4>
+    <div class="card-body pt-2">
+        <h4 class="text-center mb-4 fw-semibold">Transaction Head Details</h4>
 
-<table class="table table-bordered">
-<thead>
-<tr>
-<th>SL</th><th>Transaction Groupe</th><th>Name</th><th>MRP</th><th>Company</th><th>Action</th>
-</tr>
-</thead>
-<tbody>
-{% for h in heads %}
-<tr id="row{{h.id}}">
-<td>{{forloop.counter}}</td>
-<td>{{h.groupe.tran_groupe_name}}</td>
-<td>{{h.tran_head_name}}</td>
-<td>{{h.mrp}}</td>
-<td>{{h.company.company_id}}</td>
-<td>
-<button class="btn btn-warning editBtn" data-id="{{h.id}}">Edit</button>
-<button class="btn btn-danger deleteBtn" data-id="{{h.id}}">Delete</button>
-</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+        <table class="table table-bordered table-hover filter-table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Transaction Groupe</th>
+                    <th>Transaction Head Name</th>
+                    <th>Price</th>
+                    <th>Company Id</th>
+                    <th>Action</th>
+                </tr>
+                <tr class="filter-row">
+                    <th></th>
+                    <th><input type="text" class="form-control column-filter" data-col="1" placeholder="Search Groupe"></th>
+                    <th><input type="text" class="form-control column-filter" data-col="2" placeholder="Search Head"></th>
+                    <th><input type="text" class="form-control column-filter" data-col="3" placeholder="Search Price"></th>
+                    <th><input type="text" class="form-control column-filter" data-col="4" placeholder="Search Company"></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tranHeadTable">
+                {% for h in heads %}
+                <tr id="row{{ h.id }}">
+                    <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+
+                    <td>{{ h.groupe.tran_groupe_name }}</td>
+                    <td>{{ h.tran_head_name }}</td>
+                    <td>{{ h.mrp }}</td>
+                    <td>{% if h.company %}{{ h.company.company_id }}{% else %}-{% endif %}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary editBtn" data-id="{{ h.id }}">Edit</button>
+                        <button class="btn btn-sm btn-danger deleteBtn" data-id="{{ h.id }}">Delete</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No Transaction Heads Found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="mt-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-sm btn-outline-primary">&laquo; Prev</a>
+            {% endif %}
+
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-sm btn-outline-primary">Next &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
 <!-- ADD MODAL -->
-<div class="modal fade" id="addModal">
-<div class="modal-dialog modal-lg"><div class="modal-content">
-<form id="addForm">{% csrf_token %}
-<div class="modal-header"><h5>Add Transaction Head</h5></div>
-<div class="modal-body">
+<!-- ================= ADD MODAL ================= -->
+<div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg">
+    <form id="addForm">{% csrf_token %}
+      <div class="modal-content">
 
-<input name="tran_head_name" class="form-control mb-2" placeholder="Item Name" required>
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h5 class="modal-title">Add Transaction Head</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
 
-<select name="groupe" class="form-control mb-2" required>
-<option value="">Select Groupe</option>{% for g in groupes %}<option value="{{g.id}}">{{g.tran_groupe_name}}</option>{% endfor %}
-</select>
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <div class="row g-2">
 
-<select name="category" class="form-control mb-2"><option value="">Category</option>{% for c in cats %}<option value="{{c.id}}">{{c.name}}</option>{% endfor %}</select>
-<select name="manufacturer" class="form-control mb-2"><option value="">Manufacturer</option>{% for m in mans %}<option value="{{m.id}}">{{m.name}}</option>{% endfor %}</select>
-<select name="form" class="form-control mb-2"><option value="">Form</option>{% for f in forms %}<option value="{{f.id}}">{{f.name}}</option>{% endfor %}</select>
-<select name="unit" class="form-control mb-2" required>{% for u in units %}<option value="{{u.id}}">{{u.name}}</option>{% endfor %}</select>
+            <!-- Groupe Name -->
+            <div class="col-md-6">
+              <label>Groupe Name *</label>
+              <select name="groupe" class="form-control" required>
+                <option value="">Select Groupe</option>
+                {% for g in groups %}
+                  <option value="{{ g.id }}">{{ g.tran_groupe_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
 
-<input name="quantity" class="form-control mb-2" placeholder="Qty" required>
-<input name="cp" class="form-control mb-2" placeholder="Cost Price" required>
-<input name="mrp" class="form-control mb-2" placeholder="MRP" required>
-<input type="date" name="expiry_date" class="form-control mb-2">
+            <!-- Service/Product Name -->
+            <div class="col-md-6">
+              <label>Service/Product Name *</label>
+              <input type="text" name="tran_head_name" class="form-control" required>
+            </div>
 
-<select name="editable" class="form-control mb-2">
-<option value="1">Editable</option><option value="0">Fixed</option>
-</select>
+          </div>
 
-<select name="company" class="form-control mb-2">
-<option value="">Select Company</option>{% for c in companies %}<option value="{{c.company_id}}">{{c.company_id}}</option>{% endfor %}
-</select>
+          <div class="row g-2 mt-2">
 
+            <!-- Price -->
+            <div class="col-md-4">
+              <label>Price</label>
+              <input type="number" name="mrp" class="form-control" value="0" step="0.01">
+            </div>
+
+            <!-- Company -->
+            <div class="col-md-4">
+              <label>Company</label>
+              <select name="company" class="form-control">
+                <option value="">Select Company</option>
+                {% for c in companies %}
+                  <option value="{{ c.company_id }}">{{ c.company_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Editable -->
+            <div class="col-md-4 d-flex align-items-center mt-4">
+              <div class="form-check">
+                <input type="checkbox" name="editable" class="form-check-input" value="1" checked>
+                <label class="form-check-label">Editable</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-md-6">
+            <label>Unit *</label>
+            <select name="unit" class="form-control" required>
+                <option value="">Select Unit</option>
+                {% for u in units %}
+                    <option value="{{ u.id }}">{{ u.unit_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button class="btn btn-success">Submit</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
 </div>
-<div class="modal-footer">
-<button class="btn btn-primary">Save</button>
+
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg">
+    <form id="editForm">{% csrf_token %}
+      <input type="hidden" id="edit_id" name="id">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Transaction Head</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <div class="row g-2">
+
+            <!-- Groupe Name -->
+            <div class="col-md-6">
+              <label>Groupe Name *</label>
+              <select name="groupe" id="edit_groupe" class="form-control" required>
+                <option value="">Select Groupe</option>
+                {% for g in groups %}
+                  <option value="{{ g.id }}">{{ g.tran_groupe_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Service/Product Name -->
+            <div class="col-md-6">
+              <label>Service/Product Name *</label>
+              <input type="text" id="edit_tran_head_name" name="tran_head_name" class="form-control" required>
+            </div>
+
+          </div>
+
+          <div class="row g-2 mt-2">
+
+            <!-- Price -->
+            <div class="col-md-4">
+              <label>Price</label>
+              <input type="number" id="edit_mrp" name="mrp" class="form-control" value="0" step="0.01">
+            </div>
+
+            <!-- Company -->
+            <div class="col-md-4">
+              <label>Company</label>
+              <select name="company" id="edit_company" class="form-control">
+                <option value="">Select Company</option>
+                {% for c in companies %}
+                  <option value="{{ c.company_id }}">{{ c.company_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+                <label>Unit *</label>
+                <select name="unit" id="edit_unit" class="form-control" required>
+                    <option value="">Select Unit</option>
+                    {% for u in units %}
+                        <option value="{{ u.id }}">{{ u.unit_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <!-- Editable -->
+            <div class="col-md-4 d-flex align-items-center mt-4">
+              <div class="form-check">
+                <input type="checkbox" name="editable" id="edit_editable" class="form-check-input" value="1">
+                <label class="form-check-label">Editable</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
 </div>
-</form>
-</div></div></div>
-
-<div class="modal fade" id="editModal">
-<div class="modal-dialog modal-lg"><div class="modal-content">
-<form id="editForm">{% csrf_token %}
-<input type="hidden" name="id" id="edit_id">
-
-<div class="modal-header"><h5>Edit Transaction Head</h5></div>
-<div class="modal-body">
-
-<input name="tran_head_name" id="edit_tran_head_name" class="form-control mb-2">
-
-<select name="groupe" id="edit_groupe" class="form-control mb-2" required>
-{% for g in groupes %}<option value="{{g.id}}">{{g.tran_groupe_name}}</option>{% endfor %}
-</select>
-
-<select name="category" id="edit_category" class="form-control mb-2">
-<option value="">Category</option>{% for c in cats %}<option value="{{c.id}}">{{c.name}}</option>{% endfor %}
-</select>
-
-<select name="manufacturer" id="edit_manufacturer" class="form-control mb-2">
-<option value="">Manufacturer</option>{% for m in mans %}<option value="{{m.id}}">{{m.name}}</option>{% endfor %}
-</select>
-
-<select name="form" id="edit_form" class="form-control mb-2">
-<option value="">Form</option>{% for f in forms %}<option value="{{f.id}}">{{f.name}}</option>{% endfor %}
-</select>
-
-<select name="unit" id="edit_unit" class="form-control mb-2" required>
-{% for u in units %}<option value="{{u.id}}">{{u.name}}</option>{% endfor %}
-</select>
-
-<input name="quantity" id="edit_quantity" class="form-control mb-2">
-<input name="cp" id="edit_cp" class="form-control mb-2">
-<input name="mrp" id="edit_mrp" class="form-control mb-2">
-<input type="date" name="expiry_date" id="edit_expiry_date" class="form-control mb-2">
-
-<select name="editable" id="edit_editable" class="form-control mb-2">
-<option value="1">Editable</option>
-<option value="0">Fixed</option>
-</select>
-
-<select name="company" id="edit_company" class="form-control mb-2">
-<option value="">Select Company</option>
-{% for c in companies %}<option value="{{c.company_id}}">{{c.company_id}}</option>{% endfor %}
-</select>
-
-</div>
-<div class="modal-footer">
-<button class="btn btn-primary">Update</button>
-</div>
-</form>
-</div></div></div>
 
 
-{% endblock %}
-{% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script src="{% static 'js/transaction_heads/transaction_head.js' %}"></script>
+<script src="{% static 'js/transactionheads/transaction_heads.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
+
 {% endblock %}

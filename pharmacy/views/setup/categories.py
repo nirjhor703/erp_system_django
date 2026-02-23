@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.utils import timezone
 from django.core.paginator import Paginator
-from pharmacy.models import ItemCategories, CompanyDetails, TransactionMainHeads
+from pharmacy.models import ItemCategories, CompanyDetails, TransactionMainHeads, TransactionGroupes
 
 def category_list(request):
     rows_per_page = int(request.GET.get('rows', 15))
@@ -20,6 +20,8 @@ def category_list(request):
 
     companies = CompanyDetails.objects.filter(status=1).order_by('company_name')
     types = TransactionMainHeads.objects.filter(status=1).order_by('type_name')
+    groups = TransactionGroupes.objects.filter(status=1).order_by('tran_groupe_name')
+
 
     paginator = Paginator(categories, rows_per_page)
     page_number = request.GET.get('page')
@@ -29,6 +31,7 @@ def category_list(request):
         'categories': page_obj,
         'companies': companies,
         'types': types,
+        'groups': groups,
         'rows_per_page': rows_per_page,
         'search': search
     })
@@ -46,11 +49,15 @@ def add_category(request):
 
         module_id = request.session.get('active_module')  # 🆕 ADD THIS LINE – assign to current module
         type_obj = get_object_or_404(TransactionMainHeads, id=module_id)
+        group_id = request.POST.get('group')
+        group = TransactionGroupes.objects.filter(id=group_id).first()
+
 
         ItemCategories.objects.create(
             category_name=name,
             company=company,
             type=type_obj,
+            group=group,
             status=1,
             added_at=timezone.now()
         )
@@ -67,7 +74,9 @@ def get_category(request, id):
         'id': c.id,
         'category_name': c.category_name,
         'company': c.company.company_id if c.company else '',
-        'type': c.type.id if c.type else ''
+        'type': c.type.id if c.type else '',
+        'group': c.group.id if c.group else ''
+
     })
 
 
@@ -82,6 +91,10 @@ def update_category(request):
 
         module_id = request.session.get('active_module')  # 🆕 force module on update
         c.type = TransactionMainHeads.objects.filter(id=module_id).first()
+
+        group_id = request.POST.get('group')
+        c.group = TransactionGroupes.objects.filter(id=group_id).first()
+
 
         c.updated_at = timezone.now()
         c.save()

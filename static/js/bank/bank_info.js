@@ -3,6 +3,12 @@ $(document).ready(function(){
 function getCSRF(){
     return $('meta[name="csrf-token"]').attr('content');
 }
+$('#addModal').on('shown.bs.modal', function () {
+    setTimeout(function () {
+        document.getElementById('bank_name').focus();
+    }, 200);
+});
+
 
 // ADD
  $("#addForm").on("submit", function(e){

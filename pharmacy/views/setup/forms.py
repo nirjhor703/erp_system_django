@@ -11,14 +11,13 @@ def form_list(request):
     except:
         rows_per_page = 15
 
-    # 🔹 Get active module from session to filter by pharmacy etc
+    # Use session variable, not module_id directly
     active_module = request.session.get('active_module')
-    print("Active module:", module_id)  
 
     forms = ItemForms.objects.select_related('company', 'type')\
         .filter(status=1, type_id=active_module)\
         .order_by('added_at')  # oldest first
-    print("Forms count:", forms.count())
+
     companies = CompanyDetails.objects.filter(status=1).order_by('company_name')
     types = TransactionMainHeads.objects.filter(status=1).order_by('type_name')
 
@@ -35,26 +34,36 @@ def form_list(request):
     })
 
 
+
+
 def add_form(request):
     if request.method == "POST":
         name = request.POST.get('form_name')
         company_id = request.POST.get('company')
         type_id = request.POST.get('type')
 
-        if name and company_id:
-            company = CompanyDetails.objects.get(company_id=company_id)
-            type_obj = TransactionMainHeads.objects.get(id=type_id) if type_id else None
+        if not name or not company_id:
+            return JsonResponse({'status': 'error', 'message': 'Missing required fields'})
 
-            ItemForms.objects.create(
-                form_name=name,
-                company=company,
-                type=type_obj,
-                status=1,
-                added_at=timezone.now()
-            )
-            return JsonResponse({'status':'success'})
+        company = CompanyDetails.objects.get(company_id=company_id)
+        type_obj = TransactionMainHeads.objects.get(id=type_id) if type_id else None
 
-        return JsonResponse({'status':'error','message':'Missing fields'})
+        # Create the new form
+        ItemForms.objects.create(
+            form_name=name,
+            company=company,
+            type=type_obj,
+            status=1,
+            added_at=timezone.now()
+        )
+
+        # 🔹 Compute last page after addition
+        active_module = request.session.get('active_module')
+        forms = ItemForms.objects.filter(status=1, type_id=active_module).order_by('added_at')
+        paginator = Paginator(forms, 15)  # or use rows_per_page if dynamic
+        last_page = paginator.num_pages
+
+        return JsonResponse({'status': 'success', 'last_page': last_page})
 
 
 def get_form(request, id):

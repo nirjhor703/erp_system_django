@@ -4,22 +4,10 @@
 
 <div class="card">
 
-    <!-- TOP BAR -->
-    <div class="card-header">
-        <div class="row align-items-center">
-            <!-- Left : Add -->
-            <div class="col-md-4">
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
-                    + Add Bank Details
-                </button>
-            </div>
-
-            <!-- Right : Search -->
-            <div class="col-md-8 text-end">
-                <input type="text" id="searchBank" class="form-control w-50 d-inline global-search" placeholder="Search...">
-            </div>
-        </div>
-    </div>
+<div class="d-flex justify-content-between mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">+ Add Bank</button>
+    <input type="text" id="search" placeholder="Search..." class="form-control w-25 global-search">
+</div>
 
     <!-- CENTER HEADER -->
     <div class="card-body pt-3">
@@ -84,16 +72,19 @@
 </div>
 
 <!-- ADD MODAL -->
-<div class="modal fade" id="addModal">
-<div class="modal-dialog modal-lg">
+<div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal-dialog">
 <form id="addForm">{% csrf_token %}
 <div class="modal-content">
-<div class="modal-header"><h5>Add Bank Details</h5></div>
+<div class="modal-header">
+    <h5 class="modal-title">Add Bank</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
 <div class="modal-body">
     <div class="row g-2">
         <div class="col-md-4">
             <label>Bank Name *</label>
-            <input name="name" class="form-control" required>
+            <input name="name" id="bank_name" class="form-control" required>
         </div>
         <div class="col-md-4">
             <label>Email *</label>
@@ -139,12 +130,16 @@
 </div>
 
 <!-- EDIT MODAL -->
-<div class="modal fade" id="editModal">
+<div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog modal-lg">
 <form id="editForm">{% csrf_token %}
 <input type="hidden" name="id" id="edit_id">
 <div class="modal-content">
-<div class="modal-header"><h5>Edit Bank Details</h5></div>
+<div class="modal-header">
+    <h5 class="modal-title">Edit Bank Details<h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 <div class="modal-body">
     <div class="row g-2">
         <div class="col-md-4">

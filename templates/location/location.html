@@ -63,11 +63,14 @@
 </div>
 
 <!-- ADD MODAL -->
-<div class="modal fade" id="addModal">
+<div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog modal-md">
 <form id="addForm">{% csrf_token %}
 <div class="modal-content">
-<div class="modal-header"><h5>Add Location</h5></div>
+<div class="modal-header">
+    <h5 class="modal-title">Add Location Details/h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
 
 <div class="modal-body">
 <div class="row g-2">
@@ -92,12 +95,15 @@
 </div>
 
 <!-- EDIT MODAL -->
-<div class="modal fade" id="editModal">
+<div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog modal-md">
 <form id="editForm">{% csrf_token %}
 <input type="hidden" id="edit_id" name="id">
 <div class="modal-content">
-<div class="modal-header"><h5>Edit Location</h5></div>
+<div class="modal-header">
+    <h5 class="modal-title">Edit Location Details/h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
 
 <div class="modal-body">
 <div class="row g-2">

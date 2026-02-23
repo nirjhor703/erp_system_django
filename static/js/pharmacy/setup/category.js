@@ -1,5 +1,7 @@
 $(function(){
-
+$('#addModal').on('shown.bs.modal', function () {
+        $("#category_name").focus();
+    });
     // ---------------- ADD CATEGORY ----------------
     $("#addForm").submit(function(e){
         e.preventDefault();
@@ -24,6 +26,8 @@ $(function(){
             $("#edit_name").val(res.category_name);
             $("#edit_company").val(res.company);
             $("#edit_type").val(res.type);
+            $("#edit_group").val(res.group);
+
             $("#editModal").modal("show");
         });
     });

@@ -43,7 +43,7 @@
 </table>
 
 <!-- Add Modal -->
-<div class="modal fade" id="addModal" tabindex="-1">
+<div class="modal fade" id="addModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog">
     <form id="addForm">
       {% csrf_token %}
@@ -55,7 +55,7 @@
         <div class="modal-body">
           <div class="mb-2">
             <label>Corporate Name *</label>
-            <input type="text" class="form-control" name="name" required>
+            <input type="text" class="form-control" id="corporate_name" name="name" required>
           </div>
           <div class="mb-2">
             <label>Discount *</label>
@@ -71,7 +71,7 @@
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1">
+<div class="modal fade" id="editModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog">
     <form id="editForm">
       {% csrf_token %}

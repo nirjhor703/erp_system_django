@@ -39,16 +39,24 @@ def unit_list(request):
     })
 
 
+
 def add_unit(request):
     if request.method == "POST":
         name = request.POST.get('unit_name')
         company_id = request.POST.get('company')
-        module_id = request.session.get('active_module')
+        module_id = request.session.get('active_module')  # active module id
+        rows_per_page = request.POST.get('rows', 15)      # get current rows per page
+
+        try:
+            rows_per_page = int(rows_per_page)
+        except:
+            rows_per_page = 15
 
         if name and company_id and module_id:
             company = get_object_or_404(CompanyDetails, company_id=company_id)
             type_obj = get_object_or_404(TransactionMainHeads, id=module_id)
 
+            # 1️⃣ Create new unit
             ItemUnits.objects.create(
                 unit_name=name,
                 company=company,
@@ -56,9 +64,16 @@ def add_unit(request):
                 status=1,
                 added_at=timezone.now()
             )
-            return JsonResponse({'status': 'success'})
+
+            # 2️⃣ Get all units for this module and calculate last page
+            units = ItemUnits.objects.filter(status=1, type_id=module_id).order_by('added_at')  # oldest first
+            paginator = Paginator(units, rows_per_page)
+            last_page = paginator.num_pages
+
+            # 3️⃣ Return success with last page info
+            return JsonResponse({'status':'success', 'last_page': last_page})
         else:
-            return JsonResponse({'status': 'error', 'message': 'Missing required fields or module not set'})
+            return JsonResponse({'status':'error', 'message':'Missing required fields or module not set'})
 
 
 def get_unit(request, id):

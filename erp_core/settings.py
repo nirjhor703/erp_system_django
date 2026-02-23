@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'payment_method',
     'main_heads',
     'transaction_group',
-    # 'transaction_heads',
+    'transactionheads',
     'corporates',
 ]
 

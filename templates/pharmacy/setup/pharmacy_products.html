@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card">
+
+  <!-- Top bar with Add & Search -->
+  <div class="d-flex justify-content-between mb-3">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">+ Add Pharmacy Product</button>
+      <input type="text" id="searchInput" class="form-control w-25 global-search" placeholder="Search...">
+  </div>
+
+  <div class="card-body">
+    <h5 class="text-center mb-3">Pharmacy Product Details</h5>
+
+    <table class="table table-bordered table-hover text-center filter-table" id="pharmacyProductTable">
+      <thead>
+        <tr>
+          <th>SL</th>
+          <th>Groupe Name</th>
+          <th>Product Name</th>
+          <th>Category Name</th>
+          <th>Manufacturer</th>
+          <th>Item Form Name</th>
+          <th>Unit</th>
+          <th>QTY</th>
+          <th>CP</th>
+          <th>MRP</th>
+          <th>Company</th>
+          <th width="120">Action</th>
+        </tr>
+        <tr class="filter-row">
+          <th></th>
+          <th><input class="form-control column-filter" data-col="1" placeholder="Search Groupe"></th>
+          <th><input class="form-control column-filter" data-col="2" placeholder="Search Product"></th>
+          <th><input class="form-control column-filter" data-col="3" placeholder="Search Category"></th>
+          <th><input class="form-control column-filter" data-col="4" placeholder="Search Manufacturer"></th>
+          <th><input class="form-control column-filter" data-col="5" placeholder="Search Form"></th>
+          <th><input class="form-control column-filter" data-col="6" placeholder="Search Unit"></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th><input class="form-control column-filter" data-col="10" placeholder="Search Company"></th>
+          <th></th>
+        </tr>
+      </thead>
+<tbody>
+{% for p in products %}
+<tr id="row{{ p.id }}">
+    <td>{{ forloop.counter0|add:products.start_index }}</td>
+
+    <!-- Groupe -->
+    <td data-id="{{ p.groupe.id }}">
+        {{ p.groupe.tran_groupe_name }}
+    </td>
+
+    <!-- Product Name -->
+    <td>{{ p.tran_head_name }}</td>
+
+    <!-- Category -->
+    <td data-id="{% if p.category %}{{ p.category.id }}{% endif %}">
+        {% if p.category %}{{ p.category.category_name }}{% else %}-{% endif %}
+    </td>
+
+    <!-- Manufacturer -->
+    <td data-id="{% if p.manufacturer %}{{ p.manufacturer.id }}{% endif %}">
+        {% if p.manufacturer %}{{ p.manufacturer.manufacturer_name }}{% else %}-{% endif %}
+    </td>
+
+    <!-- Form -->
+    <td data-id="{% if p.form %}{{ p.form.id }}{% endif %}">
+        {% if p.form %}{{ p.form.form_name }}{% else %}-{% endif %}
+    </td>
+
+    <!-- Unit -->
+    <td data-id="{% if p.unit %}{{ p.unit.id }}{% endif %}">
+        {% if p.unit %}{{ p.unit.unit_name }}{% else %}-{% endif %}
+    </td>
+
+    <!-- Quantity -->
+    <td>{{ p.quantity }}</td>
+
+    <!-- CP -->
+    <td>{{ p.cp }}</td>
+
+    <!-- MRP -->
+    <td>{{ p.mrp }}</td>
+
+    <!-- Company -->
+    <td data-id="{% if p.company %}{{ p.company.company_id }}{% endif %}">
+        {% if p.company %}{{ p.company.company_name }}{% else %}-{% endif %}
+    </td>
+
+    <!-- Action -->
+    <td>
+        <button class="btn btn-sm btn-primary editBtn" data-id="{{ p.id }}">Edit</button>
+        <button class="btn btn-sm btn-danger deleteBtn" data-id="{{ p.id }}">Delete</button>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="12">No products found.</td>
+</tr>
+{% endfor %}
+</tbody>
+
+    </table>
+
+    <!-- Pagination -->
+    <nav>
+      <ul class="pagination justify-content-center">
+        {% if products.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}&rows={{ rows_per_page }}">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        {% for num in products.paginator.page_range %}
+            {% if num >= products.number|add:'-1' and num <= products.number|add:'1' %}
+                {% if products.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}&rows={{ rows_per_page }}">{{ num }}</a></li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if products.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}&rows={{ rows_per_page }}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- ================= ADD MODAL ================= -->
+<div class="modal fade" id="addProductModal" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <form id="addProductForm" class="modal-content">{% csrf_token %}
+      <div class="modal-header">
+        <h5>Add Pharmacy Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label>Pharmacy Product Name *</label>
+        <input name="product_name" id="product_name" class="form-control mb-2" required>
+
+        <label>Select Product Groupe *</label>
+        <select name="groupe" class="form-control mb-2" required>
+          <option value="">Select Groupe</option>
+          {% for g in groupes %}
+          <option value="{{ g.id }}">{{ g.tran_groupe_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Category Name</label>
+        <select name="category" class="form-control mb-2">
+          <option value="">Select Category</option>
+          {% for c in categories %}
+          <option value="{{ c.id }}">{{ c.category_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Manufacturer Name</label>
+        <select name="manufacturer" class="form-control mb-2">
+          <option value="">Select Manufacturer</option>
+          {% for m in manufacturers %}
+          <option value="{{ m.id }}">{{ m.manufacturer_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Product Form Name</label>
+        <select name="form" class="form-control mb-2">
+          <option value="">Select Form</option>
+          {% for f in forms %}
+          <option value="{{ f.id }}">{{ f.form_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Product Unit Name</label>
+        <select name="unit" class="form-control mb-2">
+          <option value="">Select Unit</option>
+          {% for u in units %}
+          <option value="{{ u.id }}">{{ u.unit_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Company *</label>
+        <select name="company" class="form-control mb-2" required>
+          <option value="">Select Company</option>
+          {% for c in companies %}
+          <option value="{{ c.company_id }}">{{ c.company_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="modal fade" id="editProductModal" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <form id="editProductForm" class="modal-content">{% csrf_token %}
+      <input type="hidden" name="id" id="edit_product_id">
+      <div class="modal-header">
+        <h5>Edit Pharmacy Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label>Pharmacy Product Name *</label>
+        <input id="edit_product_name" name="product_name" class="form-control mb-2" required>
+
+        <label>Select Product Groupe *</label>
+        <select id="edit_groupe" name="groupe" class="form-control mb-2" required>
+          <option value="">Select Groupe</option>
+          {% for g in groupes %}
+          <option value="{{ g.id }}">{{ g.tran_groupe_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Category Name</label>
+        <select id="edit_category" name="category" class="form-control mb-2">
+          <option value="">Select Category</option>
+          {% for c in categories %}
+          <option value="{{ c.id }}">{{ c.category_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Manufacturer Name</label>
+        <select id="edit_manufacturer" name="manufacturer" class="form-control mb-2">
+          <option value="">Select Manufacturer</option>
+          {% for m in manufacturers %}
+          <option value="{{ m.id }}">{{ m.manufacturer_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Product Form Name</label>
+        <select id="edit_form" name="form" class="form-control mb-2">
+          <option value="">Select Form</option>
+          {% for f in forms %}
+          <option value="{{ f.id }}">{{ f.form_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Product Unit Name</label>
+        <select id="edit_unit" name="unit" class="form-control mb-2">
+          <option value="">Select Unit</option>
+          {% for u in units %}
+          <option value="{{ u.id }}">{{ u.unit_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Company *</label>
+        <select id="edit_company" name="company" class="form-control mb-2" required>
+          <option value="">Select Company</option>
+          {% for c in companies %}
+          <option value="{{ c.company_id }}">{{ c.company_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
+<script src="{% static 'js/pharmacy/setup/pharmacy_products.js' %}"></script>
+{% endblock %}

@@ -1,4 +1,10 @@
 // Add Corporate
+$('#addModal').on('shown.bs.modal', function () {
+    setTimeout(function () {
+        document.getElementById('corporate_name').focus();
+    }, 200);
+});
+
 $("#addForm").on("submit", function(e){
     e.preventDefault();
     $.ajax({

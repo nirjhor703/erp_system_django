@@ -3,8 +3,9 @@ from pharmacy.views.setup.manufacturers import *
 from pharmacy.views.setup.categories import *
 from pharmacy.views.setup.units import *
 from pharmacy.views.setup.forms import *
-
+from pharmacy.views.setup.transaction_groupes import *
 from pharmacy.views.transaction import pharmacypurchase
+from pharmacy.views.setup.pharmacy_products import *
 
 
 # urlpatterns = [
@@ -15,7 +16,7 @@ from pharmacy.views.transaction import pharmacypurchase
 # ]
 
 urlpatterns = [
-    path('medicine/add/', pharmacypurchase.medicine_add, name='medicine-add'),
+    # path('medicine/add/', pharmacypurchase.medicine_add, name='medicine-add'),
     path('medicine/', pharmacypurchase.medicine_list, name='medicine-list'),
 
     path('product-search/', pharmacypurchase.product_search, name='product-search'),
@@ -24,7 +25,8 @@ urlpatterns = [
     path('get-stores/', pharmacypurchase.get_stores, name='get_stores'),
     path('get-suppliers/', pharmacypurchase.get_suppliers, name='get_suppliers'),
     path('get-divisions/', pharmacypurchase.get_divisions, name='get_divisions'),
-    path('transaction/get/<str:tran_id>/', pharmacypurchase.get_transaction, name='get_transaction'),
+    
+    # path('transaction/get/<str:tran_id>/', pharmacypurchase.get_transaction, name='get_transaction'),
 
 
     # path('verify-transaction/<str:tran_id>/', views.get_transaction_for_verify, name='verify_transaction_detail'),
@@ -34,7 +36,7 @@ urlpatterns = [
     # path("transaction/<str:tran_id>/details/", views.get_transaction_details, name="get_transaction_details"),
 
     # path("transaction/temp/update/<str:tran_id>/", views.update_transaction_temp, name="update_transaction_temp"),
-    path("transaction/get/<str:tran_id>/", pharmacypurchase.get_transaction, name="get_transaction"),
+    # path("transaction/get/<str:tran_id>/", pharmacypurchase.get_transaction, name="get_transaction"),
 
 
     # path("transaction/temp/details/<str:tran_id>/", views.get_temp_details),
@@ -44,7 +46,15 @@ urlpatterns = [
 
     
     path('transaction/temp/create/', pharmacypurchase.create_transaction_temp, name='create_transaction_temp'),
-    
+    path("transaction-temp/verify/", pharmacypurchase.verify_transaction, name="verify_transaction"),
+    path("transaction-main/get/", pharmacypurchase.get_transaction_main, name="get_transaction_main"),
+    path("transaction/edit-data/<str:tran_id>/",pharmacypurchase.get_transaction_for_edit,name="transaction_edit_data"
+    ),
+    # path('transaction-details-temp/delete/<int:temp_id>/', pharmacypurchase.delete_unverified_transaction, name='delete_unverified_transaction'),
+    # path('transaction-main/delete/<int:main_id>/', pharmacypurchase.delete_verified_transaction, name='delete_verified_transaction'),
+
+    path("transaction/delete/<str:tran_id>/", pharmacypurchase.delete_transaction, name="delete_transaction"),
+
 
 
     path('manufacturer/', manufacturer_list, name='manufacturer_list'),
@@ -73,6 +83,20 @@ urlpatterns = [
     path('get_form/<int:id>/', get_form, name='get_form'),
     path('update_form/', update_form, name='update_form'),
     path('delete_form/<int:id>/', delete_form, name='delete_form'),
+
+    path('transaction-groupes/', transaction_groupe_list, name='transaction_groupe_list'),
+    path('transaction-groupes/add/', add_transaction_groupe, name='add_transaction_groupe'),
+    path('transaction-groupes/get/', get_transaction_groupe, name='get_transaction_groupe'),
+    path('transaction-groupes/update/', update_transaction_groupe, name='update_transaction_groupe'),
+    path('transaction-groupes/delete/', delete_transaction_groupe, name='delete_transaction_groupe'),
+
+
+    path('pharmacy-products/', pharmacy_products_list, name='pharmacy_products_list'),
+    path('pharmacy-products/add/', pharmacy_product_add, name='pharmacy_product_add'),
+    path('pharmacy-products/edit/<int:id>/', pharmacy_product_edit, name='pharmacy_product_edit'),
+    path('pharmacy-products/delete/<int:id>/', pharmacy_product_delete, name='pharmacy_product_delete'),
+
+
 ]
 
 

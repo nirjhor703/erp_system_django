@@ -16,7 +16,7 @@ urlpatterns = [
     path('', include('payment_method.urls')),
     path('', include('main_heads.urls')),
     path('', include('transaction_group.urls')),
-    # path('', include('transaction_heads.urls')),
+    path('', include('transactionheads.urls')),
     path('', include('corporates.urls')),
 ]
 

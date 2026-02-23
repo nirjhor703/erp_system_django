@@ -373,6 +373,13 @@ class ItemCategories(models.Model):
     id = models.BigAutoField(primary_key=True)
     type = models.ForeignKey('TransactionMainHeads', models.DO_NOTHING, blank=True, null=True)
     category_name = models.CharField(max_length=255)
+    group = models.ForeignKey(
+        'TransactionGroupes',
+        models.DO_NOTHING,
+        db_column='group_id',
+        blank=True,
+        null=True
+    )
     company = models.ForeignKey(CompanyDetails, models.DO_NOTHING, to_field='company_id', blank=True, null=True)
     status = models.IntegerField()
     added_at = models.DateTimeField()

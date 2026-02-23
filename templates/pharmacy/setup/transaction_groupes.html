@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="card">
+
+<!-- Top bar -->
+<div class="d-flex justify-content-between mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+        + Add Transaction Groupe
+    </button>
+    <input type="text" id="searchInput" class="form-control w-25 global-search" placeholder="Search...">
+</div>
+
+<div class="card-body">
+<h5 class="text-center mb-3">Transaction Groupe Details</h5>
+
+<table class="table table-bordered table-hover text-center filter-table">
+<thead>
+<tr>
+    <th>SL</th>
+    <th>Transaction Groupe Name</th>
+    <th>Company</th>
+    <th width="120">Action</th>
+</tr>
+
+<tr class="filter-row">
+    <th></th>
+    <th><input class="form-control column-filter" data-col="1" placeholder="Search Groupe"></th>
+    <th><input class="form-control column-filter" data-col="4" placeholder="Search Company"></th>
+    <th></th>
+</tr>
+</thead>
+
+<tbody id="groupeTable">
+{% for g in groupes %}
+<tr id="row{{ g.id }}">
+    <td>{{ forloop.counter0|add:groupes.start_index }}</td>
+    <td>{{ g.tran_groupe_name }}</td>
+    <td>{% if g.company %}{{ g.company.company_name }}{% else %}-{% endif %}</td>
+    <td>
+        <button class="btn btn-sm btn-primary editBtn" data-id="{{ g.id }}">Edit</button>
+        <button class="btn btn-sm btn-danger deleteBtn" data-id="{{ g.id }}">Delete</button>
+    </td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+<!-- Rows per page -->
+<div class="d-flex justify-content-start mb-2">
+<label>Show
+<select id="rowsPerPage" class="form-select d-inline-block w-auto">
+    <option value="15" {% if rows_per_page == 15 %}selected{% endif %}>15</option>
+    <option value="30" {% if rows_per_page == 30 %}selected{% endif %}>30</option>
+    <option value="50" {% if rows_per_page == 50 %}selected{% endif %}>50</option>
+    <option value="100" {% if rows_per_page == 100 %}selected{% endif %}>100</option>
+</select>
+</label>
+</div>
+
+<!-- Pagination -->
+<nav>
+<ul class="pagination justify-content-center">
+
+{% if groupes.has_previous %}
+<li class="page-item">
+    <a class="page-link" href="?page={{ groupes.previous_page_number }}&rows={{ rows_per_page }}">Previous</a>
+</li>
+{% else %}
+<li class="page-item disabled"><span class="page-link">Previous</span></li>
+{% endif %}
+
+{% for num in groupes.paginator.page_range %}
+{% if num >= groupes.number|add:'-1' and num <= groupes.number|add:'1' %}
+<li class="page-item {% if groupes.number == num %}active{% endif %}">
+    <a class="page-link" href="?page={{ num }}&rows={{ rows_per_page }}">{{ num }}</a>
+</li>
+{% endif %}
+{% endfor %}
+
+{% if groupes.has_next %}
+<li class="page-item">
+    <a class="page-link" href="?page={{ groupes.next_page_number }}&rows={{ rows_per_page }}">Next</a>
+</li>
+{% else %}
+<li class="page-item disabled"><span class="page-link">Next</span></li>
+{% endif %}
+
+</ul>
+</nav>
+
+</div>
+</div>
+
+<!-- ================= ADD MODAL ================= -->
+<!-- ADD MODAL -->
+<div class="modal fade" id="addModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <form id="addForm" class="modal-content">
+      {% csrf_token %}
+
+      <div class="modal-header">
+        <h5 class="modal-title">Add Transaction Groupe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">Groupe Name *</label>
+        <input 
+          type="text" 
+          id="tran_group_name"
+          name="tran_groupe_name" 
+          class="form-control mb-3" 
+          required
+        >
+
+        <label class="form-label">Company *</label>
+        <select 
+          name="company" 
+          class="form-control mb-3" 
+          required
+        >
+          <option value="">Select Company</option>
+          {% for c in companies %}
+            <option value="{{ c.company_id }}">
+              {{ c.company_name }}
+            </option>
+          {% endfor %}
+        </select>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary w-100">
+          Submit
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+<!-- ================= EDIT MODAL ================= -->
+<!-- EDIT MODAL -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="editForm" class="modal-content">
+      {% csrf_token %}
+      <input type="hidden" name="id" id="edit_id">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Transaction Groupe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">Groupe Name *</label>
+        <input 
+          type="text" 
+          name="tran_groupe_name" 
+          id="edit_name"
+          class="form-control mb-3" 
+          required
+        >
+
+        <label class="form-label">Company *</label>
+        <select 
+          name="company" 
+          id="edit_company"
+          class="form-control mb-3" 
+          required
+        >
+          <option value="">Select Company</option>
+          {% for c in companies %}
+            <option value="{{ c.company_id }}">
+              {{ c.company_name }}
+            </option>
+          {% endfor %}
+        </select>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary w-100">
+          Update
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<!-- SAME FILTER SCRIPT YOU USED FOR CATEGORY -->
+<script src="{% static 'js/common-table-filter.js' %}"></script>
+
+<!-- TRANSACTION GROUPE JS -->
+<script src="{% static 'js/pharmacy/setup/transaction_groupe.js' %}"></script>
+{% endblock %}

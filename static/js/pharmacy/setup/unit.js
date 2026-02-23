@@ -1,17 +1,29 @@
 $(function(){
-
-    // 🔹 ADD
-    $("#addForm").submit(function(e){
-        e.preventDefault();
-        $.post("/add_unit/", $(this).serialize(), function(res){
-            if(res.status=="success"){
-                toastr.success("Unit added successfully!");
-                location.reload();
-            } else {
-                toastr.error(res.message);
-            }
-        });
+$('#addModal').on('shown.bs.modal', function () {
+        $("#unit_name").focus();
     });
+    // 🔹 ADD
+$("#addForm").submit(function(e){
+    e.preventDefault();
+
+    let data = $(this).serializeArray();
+    data.push({name: 'rows', value: $("#rowsPerPageSelect").val() || 15}); // include rows per page
+
+    $.post("/add_unit/", $.param(data), function(res){
+        if(res.status=="success"){
+            toastr.success("Unit added successfully!");
+            $("#addModal").modal('hide');
+
+            // Redirect to last page to see the newly added unit
+            setTimeout(() => {
+                let rows = $("#rowsPerPageSelect").val() || 15;
+                window.location.href = window.location.pathname + "?page=" + res.last_page + "&rows=" + rows;
+            }, 500);
+        } else {
+            toastr.error(res.message || "Error adding unit!");
+        }
+    });
+});
 
     // 🔹 EDIT LOAD
     $(".editBtn").click(function(){
