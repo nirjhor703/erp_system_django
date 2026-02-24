@@ -1,8 +1,24 @@
 $(function(){
-$('#addModal').on('shown.bs.modal', function () {
+
+    // ---------------- ADD MODAL ----------------
+    $('#addModal').on('shown.bs.modal', function () {
         $("#category_name").focus();
+
+        let type_id = "{{ module_id }}";  // fixed type for Add
+        let group_select = $("#add_group");
+
+        // Clear and populate groups
+        group_select.html('<option value="">Select Group</option>');
+        if(type_id){
+            $.get("/ajax/get-groups/", {type_id: type_id}, function(res){
+                res.groups.forEach(function(g){
+                    group_select.append('<option value="'+g.id+'">'+g.name+'</option>');
+                });
+            });
+        }
     });
-    // ---------------- ADD CATEGORY ----------------
+
+    // Add Category submit
     $("#addForm").submit(function(e){
         e.preventDefault();
         $.post("/add_category/", $(this).serialize(), function(res){
@@ -18,7 +34,7 @@ $('#addModal').on('shown.bs.modal', function () {
         });
     });
 
-    // ---------------- EDIT LOAD ----------------
+    // ---------------- EDIT MODAL ----------------
     $(".editBtn").click(function(){
         let id = $(this).data("id");
         $.get("/get_category/"+id+"/", function(res){
@@ -26,13 +42,27 @@ $('#addModal').on('shown.bs.modal', function () {
             $("#edit_name").val(res.category_name);
             $("#edit_company").val(res.company);
             $("#edit_type").val(res.type);
-            $("#edit_group").val(res.group);
+
+            let group_select = $("#edit_group");
+            group_select.html('<option value="">Select Group</option>');
+
+            // Populate groups based on type
+            if(res.type){
+                $.get("/ajax/get-groups/", {type_id: res.type}, function(groups){
+                    groups.groups.forEach(function(g){
+                        group_select.append('<option value="'+g.id+'">'+g.name+'</option>');
+                    });
+
+                    // Set current group value after options are loaded
+                    group_select.val(res.group);
+                });
+            }
 
             $("#editModal").modal("show");
         });
     });
 
-    // ---------------- UPDATE CATEGORY ----------------
+    // Edit submit
     $("#editForm").submit(function(e){
         e.preventDefault();
         $.post("/update_category/", $(this).serialize(), function(res){
@@ -49,7 +79,6 @@ $('#addModal').on('shown.bs.modal', function () {
     // ---------------- DELETE CATEGORY ----------------
     $(".deleteBtn").click(function(){
         if(!confirm("Delete this category?")) return;
-
         let id = $(this).data("id");
         $.get("/delete_category/"+id+"/", function(res){
             if(res.status=="deleted"){

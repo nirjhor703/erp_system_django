@@ -13,8 +13,13 @@ $("#addForm").submit(function(e){
         method: "POST",
         data: form.serialize(),
         success: function(res){
-            $("#addModal").modal("hide");
             toastr.success("Transaction Groupe added!");
+            $("#addModal").modal("hide");
+            setTimeout(() => {
+                let rows = $("#rowsPerPageSelect").val() || 15;
+                window.location.href = window.location.pathname + "?page=" + res.last_page + "&rows=" + rows;
+            }, 500);
+            
 
             // Scroll to last page (assume server returns total pages)
             location.href = "?page=last&rows=" + $("#rowsPerPage").val();
@@ -43,6 +48,8 @@ $(document).on("click", ".editBtn", function(){
         $("#edit_id").val(res.id);
         $("#edit_name").val(res.tran_groupe_name);
         $("#edit_company").val(res.company);
+        $("#edit_type").val(res.tran_groupe_type);
+
         $("#editModal").modal("show");
     });
 });

@@ -12,6 +12,8 @@ def transaction_groupe_list(request):
     groupes = TransactionGroupes.objects.select_related('company')\
                     .filter(status=1, tran_groupe_type=module_id)\
                     .order_by('id')
+    types = TransactionMainHeads.objects.filter(status=1).order_by('type_name')
+
     print("tran_group count:", groupes.count())  # Debug
     paginator = Paginator(groupes, rows)
     page_number = request.GET.get('page')
@@ -26,6 +28,7 @@ def transaction_groupe_list(request):
         'groupes': groupes_page,
         'rows_per_page': rows,
         'companies': CompanyDetails.objects.filter(status=1),
+        'types': types, 
         'module_id': module_id
     }
     return render(request, 'pharmacy/setup/transaction_groupes.html', context)
@@ -36,7 +39,8 @@ def add_transaction_groupe(request):
         g = TransactionGroupes.objects.create(
             tran_groupe_name=request.POST.get('tran_groupe_name'),
             company_id=request.POST.get('company'),
-            tran_groupe_type_id=1,  # default type
+            tran_groupe_type_id=request.POST.get('tran_groupe_type'),
+
             tran_method='Manual',    # default method
             status=1,
             added_at=timezone.now()

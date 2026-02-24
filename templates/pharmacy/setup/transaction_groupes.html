@@ -21,6 +21,7 @@
     <th>SL</th>
     <th>Transaction Groupe Name</th>
     <th>Company</th>
+    <th>Type</th>
     <th width="120">Action</th>
 </tr>
 
@@ -38,6 +39,8 @@
     <td>{{ forloop.counter0|add:groupes.start_index }}</td>
     <td>{{ g.tran_groupe_name }}</td>
     <td>{% if g.company %}{{ g.company.company_name }}{% else %}-{% endif %}</td>
+    <td>{{ g.tran_groupe_type.type_name }}</td>
+
     <td>
         <button class="btn btn-sm btn-primary editBtn" data-id="{{ g.id }}">Edit</button>
         <button class="btn btn-sm btn-danger deleteBtn" data-id="{{ g.id }}">Delete</button>
@@ -131,6 +134,15 @@
           {% endfor %}
         </select>
 
+        <label class="form-label">Type *</label>
+        <select name="tran_groupe_type" class="form-control mb-3" required>
+            <option value="">Select Type</option>
+            {% for t in types %}
+                <option value="{{ t.id }}">{{ t.type_name }}</option>
+            {% endfor %}
+        </select>
+
+
       </div>
 
       <div class="modal-footer">
@@ -182,6 +194,15 @@
             </option>
           {% endfor %}
         </select>
+
+        <label class="form-label">Type *</label>
+        <select name="tran_groupe_type" id="edit_type" class="form-control mb-3" required>
+            <option value="">Select Type</option>
+            {% for t in types %}
+                <option value="{{ t.id }}">{{ t.type_name }}</option>
+            {% endfor %}
+        </select>
+
 
       </div>
 

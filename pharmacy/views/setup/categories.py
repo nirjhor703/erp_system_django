@@ -80,6 +80,8 @@ def get_category(request, id):
     })
 
 
+
+
 def update_category(request):
     if request.method == "POST":
         c = get_object_or_404(ItemCategories, id=request.POST.get('id'))
