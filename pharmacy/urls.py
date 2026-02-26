@@ -8,6 +8,7 @@ from pharmacy.views.transaction import pharmacypurchase
 from pharmacy.views.setup.pharmacy_products import *
 
 
+
 # urlpatterns = [
 #     path('medicine/add/', views.add_medicine, name='add-medicine'),
 #     path('medicine/list/', views.medicine_list, name='medicine-list'),
@@ -25,6 +26,9 @@ urlpatterns = [
     path('get-stores/', pharmacypurchase.get_stores, name='get_stores'),
     path('get-suppliers/', pharmacypurchase.get_suppliers, name='get_suppliers'),
     path('get-divisions/', pharmacypurchase.get_divisions, name='get_divisions'),
+    path('ajax/get-groups/', get_groups_by_type, name='get_groups_by_type'),
+
+    
     
     # path('transaction/get/<str:tran_id>/', pharmacypurchase.get_transaction, name='get_transaction'),
 
@@ -69,6 +73,7 @@ urlpatterns = [
     path('get_category/<int:id>/',get_category, name='get_category'),
     path('update_category/',update_category, name='update_category'),
     path('delete_category/<int:id>/',delete_category, name='delete_category'),
+    path('ajax/get-groups/', get_groups_by_type, name='get_groups_by_type'),
     
     
     path('item_units/', unit_list, name='unit_list'),

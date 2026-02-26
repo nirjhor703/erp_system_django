@@ -1,14 +1,73 @@
+// Get CSRF token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
 $(function(){
-
-    // ---------------- ADD MODAL ----------------
-    $('#addModal').on('shown.bs.modal', function () {
-        $("#category_name").focus();
-
-        let type_id = "{{ module_id }}";  // fixed type for Add
+    console.log("Category JS loaded!");
+    function loadGroups(type_id){
         let group_select = $("#add_group");
+        group_select.html('<option value="">Loading...</option>');
 
-        // Clear and populate groups
+        if(type_id){
+            $.get("/ajax/get-groups/", {type_id: type_id}, function(res){
+                group_select.html('<option value="">Select Group</option>');
+
+                if(res.groups.length > 0){
+                    res.groups.forEach(function(g){
+                        group_select.append('<option value="'+g.id+'">'+g.name+'</option>');
+                    });
+                } else {
+                    group_select.html('<option value="">No groups found</option>');
+                }
+            });
+        } else {
+            group_select.html('<option value="">Select Group</option>');
+        }
+    }
+    // ---------------- ADD MODAL ----------------
+$('#addModal').on('shown.bs.modal', function () {
+    $("#category_name").focus();
+
+    let type_id = $("#add_type").val();  // hidden type
+    let group_select = $("#add_group");
+
+    // Clear previous options
+    group_select.html('<option value="">Select Group</option>');
+
+    // Fetch groups for the module type
+    if(type_id){
+        $.get("/ajax/get-groups/", {type_id: type_id}, function(res){
+            if(res.groups.length > 0){
+                res.groups.forEach(function(g){
+                    group_select.append('<option value="'+g.id+'">'+g.name+'</option>');
+                });
+            } else {
+                group_select.html('<option value="">No groups found</option>');
+            }
+        });
+    }
+});
+
+
+    // ---------------- CHANGE TYPE IN ADD ----------------
+    $("#add_type").change(function(){
+        let type_id = $(this).val();
+        let group_select = $("#add_group");
         group_select.html('<option value="">Select Group</option>');
+
         if(type_id){
             $.get("/ajax/get-groups/", {type_id: type_id}, function(res){
                 res.groups.forEach(function(g){
@@ -18,23 +77,28 @@ $(function(){
         }
     });
 
-    // Add Category submit
+    // ---------------- ADD CATEGORY SUBMIT ----------------
     $("#addForm").submit(function(e){
         e.preventDefault();
-        $.post("/add_category/", $(this).serialize(), function(res){
+        $.ajax({
+        type: "POST",
+        url: "/add_category/",
+        data: $(this).serialize(),  // includes hidden input type
+        headers: { "X-CSRFToken": csrftoken },
+        success: function(res){
             if(res.status=="success"){
                 toastr.success("Item Category added successfully!");
                 $("#addModal").modal('hide');
-                setTimeout(()=>{ 
-                    window.location.href = "?page=" + res.last_page; 
-                }, 800);
+                setTimeout(()=>{ window.location.href = "?page=" + res.last_page; }, 800);
             } else {
                 toastr.error(res.message || "Error adding category!");
             }
-        });
+        }
     });
 
-    // ---------------- EDIT MODAL ----------------
+    });
+
+    // ---------------- EDIT CATEGORY ----------------
     $(".editBtn").click(function(){
         let id = $(this).data("id");
         $.get("/get_category/"+id+"/", function(res){
@@ -46,32 +110,48 @@ $(function(){
             let group_select = $("#edit_group");
             group_select.html('<option value="">Select Group</option>');
 
-            // Populate groups based on type
             if(res.type){
-                $.get("/ajax/get-groups/", {type_id: res.type}, function(groups){
-                    groups.groups.forEach(function(g){
+                $.get("/ajax/get-groups/", {type_id: res.type}, function(res2){
+                    res2.groups.forEach(function(g){
                         group_select.append('<option value="'+g.id+'">'+g.name+'</option>');
                     });
-
-                    // Set current group value after options are loaded
                     group_select.val(res.group);
                 });
             }
-
             $("#editModal").modal("show");
         });
     });
 
-    // Edit submit
+    $("#edit_type").change(function(){
+        let type_id = $(this).val();
+        let group_select = $("#edit_group");
+        group_select.html('<option value="">Select Group</option>');
+
+        if(type_id){
+            $.get("/ajax/get-groups/", {type_id: type_id}, function(res){
+                res.groups.forEach(function(g){
+                    group_select.append('<option value="'+g.id+'">'+g.name+'</option>');
+                });
+            });
+        }
+    });
+
+    // ---------------- EDIT CATEGORY SUBMIT ----------------
     $("#editForm").submit(function(e){
         e.preventDefault();
-        $.post("/update_category/", $(this).serialize(), function(res){
-            if(res.status=="updated"){
-                toastr.success("Item Category updated successfully!");
-                $("#editModal").modal('hide');
-                setTimeout(()=>{ location.reload(); }, 800);
-            } else {
-                toastr.error("Error updating category!");
+        $.ajax({
+            type: "POST",
+            url: "/update_category/",
+            data: $(this).serialize(),
+            headers: { "X-CSRFToken": csrftoken },
+            success: function(res){
+                if(res.status == "updated"){
+                    toastr.success("Item Category updated successfully!");
+                    $("#editModal").modal('hide');
+                    setTimeout(()=>{ location.reload(); }, 800);
+                } else {
+                    toastr.error("Error updating category!");
+                }
             }
         });
     });
@@ -96,4 +176,5 @@ $(function(){
         window.location.href = '?rows=' + rows;
     });
 
+    
 });

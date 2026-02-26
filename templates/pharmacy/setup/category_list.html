@@ -86,6 +86,13 @@
         {% else %}
         <li class="page-item disabled"><span class="page-link">Next</span></li>
         {% endif %}
+
+        <!-- Last page button -->
+        {% if categories.number != categories.paginator.num_pages %}
+        <li class="page-item"><a class="page-link" href="?page={{ categories.paginator.num_pages }}&rows={{ rows_per_page }}">Last</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Last</span></li>
+        {% endif %}
     </ul>
 </nav>
 </div>
@@ -95,6 +102,7 @@
 <div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false">
 <div class="modal-dialog">
 <form id="addForm" class="modal-content">{% csrf_token %}
+    <input type="hidden" name="type" value="{{ selected_type.id }}">
 <div class="modal-header">
     <h5 class="modal-title">Add Item Category</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -113,19 +121,15 @@
 
     <!-- Optional Type -->
     <label>Type</label>
-    <select name="type" class="form-control mb-2">
-        <option value="">Select Type</option>
-        {% for t in types %}
-        <option value="{{t.id}}">{{ t.type_name }}</option>
-        {% endfor %}
-    </select>
+    <input type="text" class="form-control" value="{{ selected_type.type_name }}" readonly>
+    <input type="hidden" name="type" id="add_type" value="{{ module_id }}">
+
+
+
 
     <label>Group</label>
-    <select name="group" class="form-control mb-2">
-        <option value="">Select Group</option>
-        {% for g in groups %}
-        <option value="{{g.id}}">{{ g.tran_groupe_name }}</option>
-        {% endfor %}
+    <select name="group" id="add_group" class="form-control mb-3" required>
+    <option value="">Select Group</option>
     </select>
 
 </div>

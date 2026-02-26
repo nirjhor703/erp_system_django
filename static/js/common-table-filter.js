@@ -2,6 +2,15 @@ $(document).on("keyup change", ".column-filter, .column-filter-select", function
 
     let filters = [];
 
+    $('#searchInput').on('keyup change', function(e){
+    // optional: trigger on Enter only
+    if(e.key === "Enter" || e.type === "change"){
+        let searchVal = $(this).val();
+        let rows = $('#rowsPerPage').val(); // keep current rows per page
+        window.location.href = '?search=' + encodeURIComponent(searchVal) + '&rows=' + rows;
+    }
+});
+
     $(".column-filter, .column-filter-select").each(function () {
         let col = $(this).data("col");
         let val = $(this).val().toLowerCase();

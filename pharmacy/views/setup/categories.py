@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -8,10 +8,16 @@ def category_list(request):
     rows_per_page = int(request.GET.get('rows', 15))
     search = request.GET.get('search', '').strip()
 
-    module_id = request.session.get('active_module')  # 🆕 ADD THIS LINE – get current module id
+    module_id = request.session.get('active_module')
 
-    categories = ItemCategories.objects.select_related('company', 'type')\
-        .filter(status=1, type_id=module_id)  # 🆕 ADD THIS – filter by module
+    # Safety check
+    if not module_id:
+        return redirect('dashboard')  # or wherever module is selected
+
+    selected_type = get_object_or_404(TransactionMainHeads, id=module_id)
+
+    categories = ItemCategories.objects.select_related('company', 'type', 'group')\
+        .filter(status=1, type_id=module_id)
 
     if search:
         categories = categories.filter(category_name__icontains=search)
@@ -20,7 +26,6 @@ def category_list(request):
 
     companies = CompanyDetails.objects.filter(status=1).order_by('company_name')
     types = TransactionMainHeads.objects.filter(status=1).order_by('type_name')
-    groups = TransactionGroupes.objects.filter(status=1).order_by('tran_groupe_name')
 
 
     paginator = Paginator(categories, rows_per_page)
@@ -31,11 +36,25 @@ def category_list(request):
         'categories': page_obj,
         'companies': companies,
         'types': types,
-        'groups': groups,
+        'selected_type': selected_type,  # 👈 only this
+        'module_id': module_id,          # 👈 needed for JS
         'rows_per_page': rows_per_page,
         'search': search
     })
 
+
+def get_groups_by_type(request):
+    type_id = request.GET.get('type_id')
+    if not type_id:
+        return JsonResponse({'groups': []})
+
+    groups = TransactionGroupes.objects.filter(
+        status=1,
+        tran_groupe_type_id=type_id
+    ).order_by('tran_groupe_name')
+
+    data = [{'id': g.id, 'name': g.tran_groupe_name} for g in groups]
+    return JsonResponse({'groups': data})
 
 def add_category(request):
     if request.method == "POST":
@@ -48,9 +67,14 @@ def add_category(request):
         company = get_object_or_404(CompanyDetails, company_id=company_id)
 
         module_id = request.session.get('active_module')  # 🆕 ADD THIS LINE – assign to current module
-        type_obj = get_object_or_404(TransactionMainHeads, id=module_id)
+        type_id = request.POST.get('type')
+        type_obj = get_object_or_404(TransactionMainHeads, id=type_id)
+
         group_id = request.POST.get('group')
-        group = TransactionGroupes.objects.filter(id=group_id).first()
+        group = None
+        if group_id:
+            group = TransactionGroupes.objects.filter(id=group_id).first()
+
 
 
         ItemCategories.objects.create(
@@ -91,11 +115,16 @@ def update_category(request):
         company_id = request.POST.get('company')
         c.company = CompanyDetails.objects.filter(company_id=company_id).first()
 
-        module_id = request.session.get('active_module')  # 🆕 force module on update
-        c.type = TransactionMainHeads.objects.filter(id=module_id).first()
+        type_id = request.POST.get('type')
+        c.type = TransactionMainHeads.objects.filter(id=type_id).first()
+
 
         group_id = request.POST.get('group')
-        c.group = TransactionGroupes.objects.filter(id=group_id).first()
+        if group_id:
+            c.group = TransactionGroupes.objects.filter(id=group_id).first()
+        else:
+            c.group = None
+
 
 
         c.updated_at = timezone.now()
