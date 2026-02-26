@@ -1,0 +1,49 @@
+<table class="show-table">
+    <thead>
+        <tr>
+            <th>SL:</th>
+            <th>Status</th>
+            <th>Receive</th>
+            <th>Issue</th>
+            <th>Supplier Return</th>
+            <th>Client Return</th>
+            <th>Balance</th>
+            <th>Tran Id</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td>Opening Balance</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="text-align:right;">{{ opening_balance|floatformat:0 }}</td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% for item in data %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.tran_method }}</td>
+            <td style="text-align:right;">
+                {% if item.tran_method in "Purchase,Positive" %}{{ item.quantity_actual|floatformat:0 }}{% else %}0{% endif %}
+            </td>
+            <td style="text-align:right;">
+                {% if item.tran_method in "Issue,Negative" %}{{ item.quantity_actual|floatformat:0 }}{% else %}0{% endif %}
+            </td>
+            <td style="text-align:right;">
+                {% if item.tran_method == "Supplier Return" %}{{ item.quantity_actual|floatformat:0 }}{% else %}0{% endif %}
+            </td>
+            <td style="text-align:right;">
+                {% if item.tran_method == "Client Return" %}{{ item.quantity_actual|floatformat:0 }}{% else %}0{% endif %}
+            </td>
+            <td style="text-align:right;">{{ item.balance|floatformat:0 }}</td>
+            <td>{{ item.tran_id }}</td>
+            <td>{{ item.tran_date|date:"d-m-Y" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

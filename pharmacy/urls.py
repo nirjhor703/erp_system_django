@@ -6,7 +6,8 @@ from pharmacy.views.setup.forms import *
 from pharmacy.views.setup.transaction_groupes import *
 from pharmacy.views.transaction import pharmacypurchase
 from pharmacy.views.setup.pharmacy_products import *
-
+from pharmacy.views.reports.item_flow import item_flow_report
+from pharmacy.views.reports.stock import stock_details
 
 
 # urlpatterns = [
@@ -101,8 +102,14 @@ urlpatterns = [
     path('pharmacy-products/edit/<int:id>/', pharmacy_product_edit, name='pharmacy_product_edit'),
     path('pharmacy-products/delete/<int:id>/', pharmacy_product_delete, name='pharmacy_product_delete'),
 
+    # Item Flow Statement
+    path('reports/item-flow/', item_flow_report, name='item_flow_report'),   
 
-]
+    # Stock Details
+    path('reports/stock-details/', stock_details.show_stock_details, name='show_stock_details'),
+    path('reports/stock-details/search/', stock_details.search_stock_details, name='search_stock_details'),
+    path('reports/stock-details/print/', stock_details.print_stock_details, name='print_stock_details'),
+    ]
 
 
 

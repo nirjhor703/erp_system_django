@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report_name|default:"Stock Details" }}</title>
+</head>
+<body>
+
+<!-- Header / Company Info -->
+<div style="text-align: center; width: 100%; margin: 0 auto;">
+    <p style="margin-bottom: 10px;font-size:25px;">
+        <strong>{{ request.user.company.company_name|default:"Team-Solutions-Bangladesh" }}</strong>
+    </p>
+    <p style="margin: 0 auto; max-width: 35%;">
+        {{ request.user.company.address|default:"12th floor, 28 Kazi Nazrul Islam Ave, Banglamotor, Dhaka 1000" }} <br>
+        Phone no: {{ request.user.company.company_phone|default:"01314353560" }}
+    </p>
+    <p style="margin-top: 10px;">
+        <strong style="font-size: 25px;">{{ report_name|default:"Stock Details Report" }}</strong>
+    </p>
+    <p>
+        <strong>As on:</strong>
+        {% if start_date == end_date %}
+            {{ start_date }}
+        {% else %}
+            {{ start_date }} - {{ end_date }}
+        {% endif %}
+    </p>
+</div>
+
+<!-- Print Button -->
+<div class="add-search">
+    <div class="rows" style="align-items:center;">
+        <div class="c-10"></div>
+        <div class="c-1">
+            <a class="btn-blue" id="print">Print</a>
+        </div>
+        <div class="c-1"></div>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="load-data">
+    <table class="data-table" id="data-table">
+        <caption>{{ report_name|default:"Stock Details" }} Details</caption>
+        <thead>
+            <tr>
+                <th>SL</th>
+                <th>Batch Id</th>
+                <th>Product Name</th>
+                <th>Category Name</th>
+                <th>Manufacturer</th>
+                <th>Item Form</th>
+                <th>QTY</th>
+                <th>Unit</th>
+                <th>CP</th>
+                <th>MRP</th>
+                <th>Expiry</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.tran_id }}</td>
+                <td>{{ item.head.tran_head_name }}</td>
+                <td>
+                    {% if item.head.category %}
+                        {{ item.head.category.category_name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.head.manufacturer %}
+                        {{ item.head.manufacturer.manufacturer_name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.head.form %}
+                        {{ item.head.form.form_name }}
+                    {% endif %}
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>{% if item.unit %}{{ item.unit.unit_name }}{% endif %}</td>
+                <td>{{ item.cp }}</td>
+                <td>{{ item.mrp }}</td>
+                <td>{{ item.expiry_date|date:"d-m-Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="paginate"></div>
+</div>
+
+<!-- JS Scripts -->
+{% comment %} <script src="{% static 'js/ajax/your_script.js' %}"></script> {% endcomment %}
+</body>
+</html>

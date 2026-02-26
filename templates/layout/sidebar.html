@@ -1,5 +1,12 @@
 <div class="sidebar">
     <ul class="menu">
+        <div class="sidebar-user">
+            <i class="fas fa-user-circle user-icon"></i>
+            <div class="user-info">
+                <span class="welcome-text"></span>
+                <span class="user-name">{{ request.session.user_name |default:request.session.user_name  }}</span>
+            </div>
+        </div>
 
        <!-- ADMINISTRATOR -->
         <li class="menu-item has-submenu">
@@ -293,10 +300,10 @@
 
         <!-- PHARMACY -->
         <li class="menu-item has-submenu">
-            <a href="{% url 'set_module' 6 %}" class="submenu-toggle">PHARMACY <span class="arrow">›</span></a>
+            <!-- TOP LEVEL: just toggle, no URL -->
+            <a href="#" class="submenu-toggle">PHARMACY <span class="arrow">›</span></a>
 
             <ul class="submenu">
-
                 <!-- Setup -->
                 <li class="menu-item has-submenu">
                     <a href="#" class="submenu-toggle">Setup <span class="arrow">›</span></a>
@@ -318,7 +325,6 @@
                         <li><a href="#">Store Manager</a></li>
                     </ul>
                 </li>
-
 
                 <!-- Transactions -->
                 <li class="menu-item has-submenu">
@@ -351,11 +357,43 @@
                 </li>
 
                 <!-- Reports -->
+                <!-- REPORTS -->
                 <li class="menu-item has-submenu">
                     <a href="#" class="submenu-toggle">Reports <span class="arrow">›</span></a>
                     <ul class="submenu child-menu">
-                        <li><a href="#">Salesman</a></li>
-                        <li><a href="#">Store Manager</a></li>
+                        <li><a href="#">Item Flow Statement</a></li>
+                        <li class="menu-item has-submenu">
+                            <a href="#" class="submenu-toggle">Stock Statement <span class="arrow">›</span></a>
+                            <ul class="submenu child-menu">
+                                <li><a href="#">Stock Details</a></li>
+                                <li><a href="#">Stock Summary</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Profitability Statement</a></li>
+                        <li><a href="#">Expiry Statement</a></li>
+                        <li class="menu-item has-submenu">
+                            <a href="#" class="submenu-toggle">Purchase Statement <span class="arrow">›</span></a>
+                            <ul class="submenu child-menu">
+                                <li><a href="#">Purchase Details</a></li>
+                                <li><a href="#">Purchase Summary</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item has-submenu">
+                            <a href="#" class="submenu-toggle">Issue Statement <span class="arrow">›</span></a>
+                            <ul class="submenu child-menu">
+                                <li><a href="#">Issue Details</a></li>
+                                <li><a href="#">Issue Summary</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item has-submenu">
+                            <a href="#" class="submenu-toggle">Return Statement <span class="arrow">›</span></a>
+                            <ul class="submenu child-menu">
+                                <li><a href="#">Client Details</a></li>
+                                <li><a href="#">Client Summary</a></li>
+                                <li><a href="#">Supplier Details</a></li>
+                                <li><a href="#">Supplier Summary</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             </ul>
