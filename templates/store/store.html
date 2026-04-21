@@ -22,6 +22,14 @@
             <th>Address</th>
             <th>Action</th>
         </tr>
+            <tr class="filter-row">
+            <th></th>
+            <th><input class="form-control column-filter" data-col="1" placeholder="Search Store"></th>
+            <th><input class="form-control column-filter" data-col="2" placeholder="Search Division"></th>
+            <th><input class="form-control column-filter" data-col="3" placeholder="Search Location"></th>
+            <th><input class="form-control column-filter" data-col="4" placeholder="Search Address"></th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
         {% for s in stores %}
@@ -132,4 +140,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="{% static 'js/store/store_info.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 {% endblock %}

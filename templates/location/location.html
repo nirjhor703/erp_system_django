@@ -34,6 +34,13 @@
 <th width="30%">Upazila</th>
 <th width="120">Action</th>
 </tr>
+<tr class="filter-row">
+    <th></th>
+    <th><input class="form-control column-filter" data-col="1" placeholder="Search Division"></th>
+    <th><input class="form-control column-filter" data-col="2" placeholder="Search District"></th>
+    <th><input class="form-control column-filter" data-col="3" placeholder="Search Upazila"></th>
+    <th></th>
+</tr>
 </thead>
 
 <tbody id="locationTable" class="text-center">
@@ -118,6 +125,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="{% static 'js/location/location_info.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 
 {% endblock %}
 

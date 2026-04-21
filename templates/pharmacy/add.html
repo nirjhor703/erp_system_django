@@ -1,9 +1,12 @@
+{% load static %}
+
+
 <div class="modal-dialog modal-xl" style="max-width: 100%; height: 70vh;">
   <div class="modal-content" style="height: 100%;">
     <div class="modal-body" style="overflow-y: auto;">
       
-
-      <h4 class="text-center mb-4">Add Pharmacy Purchase</h4>
+      <h4 class="text-center mb-4"> - Add Pharmacy Purchase - </h4>
+      
 
       <div class="container-fluid">
         <div class="row">
@@ -14,8 +17,12 @@
             <!-- DATE / STORE / LOCATION -->
             <div class="row g-3 mb-3">
               <div class="col-md-4">
-                <label class="fw-semibold">Location</label>
-                <input type="text" id="location" class="form-control" placeholder="Enter location">
+                <label class="fw-semibold">Location</label>                
+                <select name="location" class="form-control location-select">
+                    <!-- {% for t in teacher %}
+                        <option value="{{ t.id }}">{{ t.name }}</option>
+                    {% endfor %} -->
+                </select>
               </div>
 
               <div class="col-md-4">
@@ -29,6 +36,7 @@
               <div class="col-md-4">
                 <label class="fw-semibold">Date</label>
                 <input type="date" id="date" class="form-control">
+                
               </div>
             </div>
 
@@ -38,7 +46,10 @@
               <!-- Supplier Name -->
               <div class="col-md-6">
                 <label class="fw-semibold">Supplier Name</label>
-                <input type="text" id="supplier" name="supplier" class="form-control" placeholder="Select Supplier">
+                <input type="text" id="supplier2" name="supplier2" class="form-control" placeholder="Select Supplier" hidden>
+                <select name="supplier" class="form-control supplier-select"></select>
+
+
               </div>
 
               <!-- Payment Method -->
@@ -46,6 +57,7 @@
                 <label class="fw-semibold">Payment Method</label>
                 <select id="payment_method" name="tran_method" class="form-control">
                   <option value="" disabled selected>Select Payment Method</option>
+                  <option value="bkash" selected>Cash</option>
                   <option value="bkash">Bkash</option>
                   <option value="nogod">Nogod</option>
                   <option value="rocket">Rocket</option>
@@ -213,32 +225,50 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("/get-stores/")
         .then(response => response.json())
         .then(data => {
-            const storeSelect = document.getElementById("store");
-            storeSelect.innerHTML = '<option value="">Select Store</option>';
 
-            data.stores.forEach(store => {
-                let opt = document.createElement("option");
-                opt.value = store.id;
-                opt.textContent = store.name;
-                storeSelect.appendChild(opt);
-            });
+            // CREATE FORM STORE
+            const storeSelect = document.getElementById("store");
+            if(storeSelect){
+                storeSelect.innerHTML = '<option value="">Select Store</option>';
+                data.stores.forEach(store => {
+                    let opt = document.createElement("option");
+                    opt.value = store.id;
+                    opt.textContent = store.name;
+                    if (store.id == 1) opt.selected = true;
+                    storeSelect.appendChild(opt);
+                });
+            }
+
+            // EDIT MODAL STORE
+            const editStore = document.getElementById("edit_store");
+            if(editStore){
+                editStore.innerHTML = '<option value="">Select Store</option>';
+                data.stores.forEach(store => {
+                    let opt = document.createElement("option");
+                    opt.value = store.id;
+                    opt.textContent = store.name;
+                    editStore.appendChild(opt);
+                });
+            }
+
         })
         .catch(error => console.error("Error loading stores:", error));
 });
 </script>
 
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('#supplier').one('focus', function() { // first click e fetch
+    $('#supplier2').one('focus', function() { // first click e fetch
         $.ajax({
             url: "{% url 'get_suppliers' %}",
             method: "GET",
             success: function(response) {
                 let suppliers = response.suppliers;
-                let options = suppliers.map(s => `<option value="${s.name}"></option>`).join('');
-                $('#supplier').after(`<datalist id="supplier-list">${options}</datalist>`);
-                $('#supplier').attr('list', 'supplier-list');
+                let options = suppliers.map(s => `<option value="${s.id}   ${s.name}"></option>`).join('');
+                $('#supplier2').after(`<datalist id="supplier-list">${options}</datalist>`);
+                $('#supplier2').attr('list', 'supplier-list');
             },
             error: function() {
                 alert('Failed to fetch suppliers');
@@ -248,25 +278,8 @@ $(document).ready(function() {
 });
 </script>
 
-<script>
-$(document).ready(function() {
-    $('#location').one('focus', function() {
-        $.ajax({
-            url: "{% url 'get_divisions' %}",
-            method: "GET",
-            success: function(response) {
-                let divisions = response.divisions;
-                let options = divisions.map(d => `<option value="${d.name}"></option>`).join('');
-                $('#location').after(`<datalist id="division-list">${options}</datalist>`);
-                $('#location').attr('list', 'division-list');
-            },
-            error: function() {
-                alert('Failed to fetch divisions');
-            }
-        });
-    });
-});
-</script>
+
+
 {% comment %} <script>
 $(document).ready(function () {
 
@@ -372,3 +385,15 @@ $("#SubmitBtn").on("click", function(e){
 });
 </script>
  {% endcomment %}
+
+<!-- {% block extra_js %}
+<script>
+    const DIVISION_COMBO_URL = "{% url 'get_divisions_combo' %}";
+    const SUPPLIER_COMBO_URL = "{% url 'get_supplier_combo' %}";
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{% static 'js/location/location_load_combo.js' %}"></script>
+<script src="{% static 'js/supplier_load_combo.js' %}"></script>
+<script src="{% static 'js/product_load.js' %}"></script>
+
+{% endblock %} -->

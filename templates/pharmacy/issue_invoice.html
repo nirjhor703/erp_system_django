@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Issue Invoice{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow p-4">
+
+        <!-- HEADER -->
+        <div class="text-center mb-4">
+            <h3>Pharmacy Issue Invoice</h3>
+            <p><strong>Transaction ID:</strong> {{ tran_id }}</p>
+            <p><strong>Date:</strong> {{ tran_date }}</p>
+        </div>
+
+        <!-- INFO -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>Store:</strong> {{ store }}</p>
+                <p><strong>Location:</strong> {{ location }}</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <p><strong>Supplier:</strong> {{ supplier }}</p>
+                <p><strong>Invoice No:</strong> {{ invoice }}</p>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>SL</th>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>CP</th>
+                    <th>MRP</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in products %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>{{ item.cp }}</td>
+                    <td>{{ item.mrp }}</td>
+                    <td>{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- SUMMARY -->
+        <div class="row mt-3">
+            <div class="col-md-6"></div>
+            <div class="col-md-6">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Bill Amount</th>
+                        <td>{{ bill_amount }}</td>
+                    </tr>
+                    <tr>
+                        <th>Discount</th>
+                        <td>{{ discount }}</td>
+                    </tr>
+                    <tr>
+                        <th>Net Amount</th>
+                        <td>{{ net_amount }}</td>
+                    </tr>
+                    <tr>
+                        <th>Advance</th>
+                        <td>{{ receive }}</td>
+                    </tr>
+                    <tr>
+                        <th>Due</th>
+                        <td>{{ due }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="text-center mt-4">
+            <a href="{% url 'download_issue_pdf' tran_id %}" class="btn btn-success">
+                Download PDF
+            </a>
+
+            <a href="{% url 'add_issue_page' %}" class="btn btn-secondary">
+                Back
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

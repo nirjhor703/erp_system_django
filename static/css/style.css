@@ -478,3 +478,17 @@ input, select {
     font-weight:800 !important;
     border-color:#e6b800 !important;
 }
+
+.table-active-row {
+    background-color: #0d6efd !important;
+    color: white;
+}
+
+ #poList tr {
+        cursor: pointer;
+    }
+
+    #poList tr:hover {
+        background: #f2f2f2;
+    }
+

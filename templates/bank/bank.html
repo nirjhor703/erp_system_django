@@ -30,16 +30,31 @@
         <!-- TABLE -->
         <table class="table table-bordered table-hover">
             <thead>
-                <tr>
-                    <th style="width:5%">SL</th>
-                    <th style="width:10%">Bank Id</th>
-                    <th style="width:15%">Name</th>
-                    <th style="width:15%">Email</th>
-                    <th style="width:10%">Phone</th>
-                    <th style="width:15%">Location</th>
-                    <th style="width:20%">Address</th>
-                    <th style="width:10%">Action</th>
-                </tr>
+
+                        <tr>
+                            <th>SL</th>
+                            <th>Bank Id</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Location</th>
+                            <th>Address</th>
+                            <th>Action</th>
+                        </tr>
+                       <tr class="filter-row">
+                            <th></th>
+                            <th><input class="form-control column-filter" data-col="1" placeholder="Search ID"></th>
+                            <th><input class="form-control column-filter" data-col="2" placeholder="Search Name"></th>
+                            <th><input class="form-control column-filter" data-col="3" placeholder="Search Email"></th>
+                            <th><input class="form-control column-filter" data-col="4" placeholder="Search Phone"></th>
+                            <th><input class="form-control column-filter" data-col="5" placeholder="Search Location"></th>
+                            <th><input class="form-control column-filter" data-col="6" placeholder="Search Address"></th>
+                            <th></th>
+                        </tr>
+
+                        
+
+
             </thead>
             <tbody id="bankTable">
                 {% for b in banks %}
@@ -191,5 +206,6 @@
 
 <!-- External JS -->
 <script src="{% static 'js/bank/bank_info.js' %}"></script>
+<script src="{% static 'js/common-table-filter.js' %}"></script>
 
 {% endblock %}
