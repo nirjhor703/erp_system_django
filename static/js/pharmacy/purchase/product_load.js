@@ -573,7 +573,52 @@ function updateSerial() {
         updateInvoiceSummary();
     });
 
+function loadTransactionWith() {
+    $.ajax({
+        url: window.APP_URLS.TRANSACTION_WITH_URL,
+        type: "GET",
+        success: function (data) {
+
+            let html = `<option value="">Select</option>`;
+
+            data.forEach(item => {
+                html += `<option value="${item.id}">${item.tran_with_name}</option>`;
+            });
+
+            $("#transaction_with").html(html);
+        }
+    });
+}
+
+$("#transaction_with").on("change", function () {
+
+    let id = $(this).val();
+
+    $("#supplier").html(`<option>Loading...</option>`);
+
+    if (!id) {
+        $("#supplier").html(`<option value="">Select Supplier</option>`);
+        return;
+    }
+
+    $.ajax({
+        url: "/get-supplier-by-tran-with/",
+        data: { tran_with_id: id },
+        success: function (res) {
+
+            let html = `<option value="">Select Supplier</option>`;
+
+            res.forEach(item => {
+                html += `<option value="${item.id}">${item.tran_with_name}</option>`;
+            });
+
+            $("#supplier").html(html);
+        }
+    });
+});
+    loadTransactionWith();
     loadProducts();
+
     // $('#productSearch').focus();
 });
 // get CSRF from cookie
@@ -640,7 +685,11 @@ $('#saveAllBtn').on('click', function (e) {
     let payload = {
         store: parseInt($('.store-select').val()) || null,
         location: parseInt($('.location-select').val()) || null,
-        supplier: parseInt($('.supplier-select').val()) || null,
+        supplier: parseInt($('#supplier').val()) || null,
+
+        tran_type_with: parseInt($('#transaction_with').val()) || null,
+        tran_type: 6,          // Pharmacy
+        tran_method: "payment",
         invoice: $('#purchaseinvoice').val(),
         payment_method: $('#payment_method').val(),
         bill_amount: parseFloat($('#invoiceAmount').val()) || 0,

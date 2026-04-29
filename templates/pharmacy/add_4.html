@@ -45,28 +45,51 @@
                         </div>
                     </div>
 
-                    <!-- SUPPLIER -->
-                    <div class="row mb-1">
-                        <div class="col-md-7">
-                            <label class="fw-semibold" style="display:inline-block; width:120px;">Supplier Name</label>
-                            <select name="supplier" class="form-control-sm supplier-select"></select>
+                   <div class="row g-2 mb-1">
+
+                        <!-- TRAN TYPE -->
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Tran Type</label>
+                            <input type="text" id="tran_type" class="form-control form-control-sm bg-light text-muted"  value="pharmacy" readonly>
                         </div>
 
+                        <!-- METHOD -->
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Method</label>
+                            <input type="text" id="tran_method" class="form-control form-control-sm bg-light text-muted"  value="payment" readonly>
+                        </div>
+
+                        <!-- TRANSACTION WITH -->
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Transaction With</label>
+                            <select id="transaction_with" class="form-control form-control-sm">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+
+                        <!-- SUPPLIER -->
+                        <div class="col-md-6">
+                            <label class="fw-semibold">Supplier Name</label>
+                            <select id="supplier" name="supplier" class="form-control form-control-sm supplier-select"></select>
+                        </div>
+
+                        <!-- INVOICE -->
                         <div class="col-md-3">
                             <label class="fw-semibold">Invoice No.</label>
-                            <!-- <input type="text" id="productSearch" class="form-control form-control-sm" autocomplete="off"> -->
-                            <input type="text" id="purchaseinvoice" class="form-control-sm" style="width: 130px;" autocomplete="off">
-                        </div>                        
+                            <input type="text" id="purchaseinvoice" class="form-control form-control-sm" autocomplete="off">
+                        </div>
 
-                        <div class="col-md-2">
+                        <!-- PAYMENT -->
+                        <div class="col-md-3">
                             <label class="fw-semibold">Pay</label>
-                            <select id="payment_method" name="tran_method" class="form-control-sm">
+                            <select id="payment_method" name="tran_method" class="form-control form-control-sm">
                                 <option value="cash">Cash</option>
                                 <option value="bkash">Bkash</option>
                                 <option value="nogod">Nogod</option>
                                 <option value="rocket">Rocket</option>
                             </select>
                         </div>
+
                     </div>
 
                     <!-- PRODUCT SEARCH -->
@@ -243,7 +266,8 @@
     window.APP_URLS = {
         DIVISION_COMBO_URL: "{% url 'get_divisions_combo' %}",
         SUPPLIER_COMBO_URL: "{% url 'get_supplier_combo' %}",
-        STORE_COMBO_URL: "{% url 'get_store_combo' %}"
+        STORE_COMBO_URL: "{% url 'get_store_combo' %}",
+        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_combo' %}"
     };
 </script>
 

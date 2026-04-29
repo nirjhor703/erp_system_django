@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # 'transaction_heads',
     'corporates',
     'transaction_with',
+    'general_transaction',
 ]
 
 MIDDLEWARE = [
