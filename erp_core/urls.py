@@ -21,6 +21,7 @@ urlpatterns = [
     # path('', include('transaction_heads.urls')),
     path('', include('corporates.urls')),
     path('general/', include('general_transaction.urls')), 
+    path('bank_tran/', include('bank_transaction.urls')), 
 ]
 
 

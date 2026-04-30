@@ -4,7 +4,7 @@ import json
 from django.http import HttpResponse, JsonResponse
 from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import TransactionDetails, TransactionMains,UserInfos, TransactionWiths, TransactionHeads, Stores, ItemManufacturers, LocationInfos, TransactionMainsTemps, TransactionDetailsTemps, TransactionMainHeads
+from .models import TransactionDetails, TransactionMains,UserInfos, TransactionWiths, TransactionHeads, Stores, ItemManufacturers, LocationInfos, TransactionMainsTemps, TransactionDetailsTemps, TransactionMainHeads ,Banks
 from django.core.paginator import Paginator
 from django.db import connection
 from django.db import transaction
@@ -356,6 +356,7 @@ def get_suppliers(request):
     data = [{"id": m.id, "name": m.manufacturer_name} for m in manufacturers]
     return JsonResponse({"suppliers": data})
 
+
 def get_divisions(request):
     # Only active locations (status=1)    
     divisions = LocationInfos.objects.filter(status=1).order_by('division')
@@ -404,6 +405,27 @@ def get_supplier_combo(request):
 
     return JsonResponse({
         "supplier_combo": data
+    })
+
+def get_bank_combo(request):
+    with connection.cursor() as cursor:
+
+        sql = """
+            SELECT
+                b.id,
+                b.name
+            FROM banks b
+            WHERE b.status = 1
+            ORDER BY b.name
+        """
+
+        cursor.execute(sql)
+        data = dictfetchall(cursor)
+
+    print("DEBUG:", data)
+
+    return JsonResponse({
+        "bank_combo": data
     })
 
 def get_store_combo(request):

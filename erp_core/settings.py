@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'corporates',
     'transaction_with',
     'general_transaction',
+    'bank_transaction',
 ]
 
 MIDDLEWARE = [

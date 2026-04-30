@@ -41,6 +41,7 @@ urlpatterns = [
     path('get-divisions/', views.get_divisions, name='get_divisions'),
     path('get-divisions-combo/', views.get_divisions_combo, name='get_divisions_combo'),
     path('get-supplier-combo/', views.get_supplier_combo, name='get_supplier_combo'),
+    path('get-bank-combo/', views.get_bank_combo, name='get_bank_combo'),
     path('get-store-combo/', views.get_store_combo, name='get_store_combo'),
     path('get-transaction-with/', views.get_transaction_with_combo, name='get_transaction_with_combo'),
     path('get-transaction-with-issue/', views.get_transaction_with_combo_issue, name='get_transaction_with_combo_issue'),
