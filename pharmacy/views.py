@@ -1,9 +1,10 @@
 from datetime import timezone
+from io import BytesIO
 import json
 from django.http import HttpResponse, JsonResponse
 from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import TransactionDetails, TransactionMains, TransactionHeads, Stores, ItemManufacturers, LocationInfos, TransactionMainsTemps, TransactionDetailsTemps, TransactionMainHeads
+from .models import TransactionDetails, TransactionMains,UserInfos, TransactionWiths, TransactionHeads, Stores, ItemManufacturers, LocationInfos, TransactionMainsTemps, TransactionDetailsTemps, TransactionMainHeads
 from django.core.paginator import Paginator
 from django.db import connection
 from django.db import transaction
@@ -15,8 +16,13 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
+from django.template.loader import get_template
+from reportlab.platypus import Table
+from django.utils.dateparse import parse_date
+from reportlab.platypus import Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 
 def dictfetchall(cursor):
@@ -174,7 +180,8 @@ def purchase_list_load(request):
             m.id,
             m.tran_id AS tran_id,
             m.tran_date AS tran_date,
-            m.tran_user AS tran_supplier,
+            m.tran_type_with AS tran_type_with,
+            m.tran_user AS tran_user,
             m.bill_amount AS bill_total,
             m.discount AS discount,
             m.net_amount AS net_total,
@@ -193,6 +200,8 @@ def purchase_list_load(request):
         sql += " AND (m.tran_id LIKE %s OR m.tran_user LIKE %s)"
         params.append(f"%{q}%")
         params.append(f"%{q}%")
+    sql += " AND m.tran_id LIKE %s"
+    params.append("PHR%")
 
     # 🔥 DATE FILTER (ALWAYS WORKS)
     if start_date:
@@ -203,7 +212,7 @@ def purchase_list_load(request):
         sql += " AND DATE(m.tran_date) <= %s"
         params.append(end_date)
 
-    sql += " ORDER BY m.id DESC LIMIT %s OFFSET %s"
+    sql += " ORDER BY m.id ASC LIMIT %s OFFSET %s"
     params.extend([limit, offset])
 
     cursor = connection.cursor()
@@ -211,6 +220,121 @@ def purchase_list_load(request):
     data = dictfetchall(cursor)
 
     return JsonResponse({'results': data})
+
+def purchase_report_pdf(request):
+
+    q = request.GET.get('q', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    sql = """
+        SELECT 
+            m.tran_id,
+            m.tran_date,
+            m.tran_type_with,
+            m.tran_user,
+            m.bill_amount,
+            m.discount,
+            m.net_amount,
+            m.receive,
+            m.due_col,
+            m.due_disc,
+            m.due
+        FROM transaction__mains m
+        WHERE 1=1
+    """
+
+    params = []
+
+    if q:
+        sql += " AND (m.tran_id LIKE %s OR m.tran_user LIKE %s)"
+        params += [f"%{q}%", f"%{q}%"]
+    sql += " AND m.tran_id LIKE %s"
+    params.append("PHR%")
+
+    if start_date:
+        sql += " AND DATE(m.tran_date) >= %s"
+        params.append(start_date)
+
+    if end_date:
+        sql += " AND DATE(m.tran_date) <= %s"
+        params.append(end_date)
+
+    sql += " ORDER BY m.id ASC"
+    
+
+    cursor = connection.cursor()
+    cursor.execute(sql, params)
+    data = dictfetchall(cursor)
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+
+    styles = getSampleStyleSheet()
+    title_style = styles["Title"]
+    normal_style = styles["Normal"]
+
+    elements = []
+
+    # =========================
+    # HEADER
+    # =========================
+    title = Paragraph("Purchase List Report", title_style)
+    elements.append(title)
+    elements.append(Spacer(1, 10))
+
+    date_text = f"""
+    <b>Start Date:</b> {start_date if start_date else '-'}  
+    <b>End Date:</b> {end_date if end_date else '-'}
+    """
+
+    date_para = Paragraph(date_text, normal_style)
+    elements.append(date_para)
+    elements.append(Spacer(1, 20))
+
+    # =========================
+    # TABLE DATA
+    # =========================
+    table_data = [
+        ["SL","Tran ID","Date","Supplier","Tran User","Bill","Disc","Net","Adv","Due Col","Due Disc","Due"]
+    ]
+
+    for i, p in enumerate(data, 1):
+        table_data.append([
+            i,
+            p["tran_id"],
+            str(p["tran_date"]),
+            p["tran_type_with"],
+            p["tran_user"],
+            
+            p["bill_amount"],
+            p["discount"],
+            p["net_amount"],
+            p["receive"],
+            p["due_col"],
+            p["due_disc"],
+            p["due"]
+        ])
+
+    table = Table(table_data)
+
+    table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.grey),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTSIZE', (0,0), (-1,-1), 8),
+    ]))
+
+    elements.append(table)
+
+    # =========================
+    # BUILD PDF
+    # =========================
+    doc.build(elements)
+
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type="application/pdf")
 
 
 def add_medicine(request):
@@ -302,6 +426,37 @@ def get_store_combo(request):
     return JsonResponse({
         "store_combo": data
     })
+
+def get_transaction_with_combo(request):
+    data = TransactionWiths.objects.filter(
+        tran_type=6,
+        tran_method='payment',
+        status=1
+    ).values('id', 'tran_with_name')
+
+    return JsonResponse(list(data), safe=False)
+
+def get_transaction_with_combo_issue(request):
+    data = TransactionWiths.objects.filter(
+        tran_type=6,
+        tran_method='receive',
+        status=1
+    ).values('id', 'tran_with_name')
+
+    return JsonResponse(list(data), safe=False)
+
+def get_supplier_by_tran_with(request):
+    tran_with_id = request.GET.get('tran_with_id')
+
+    if not tran_with_id:
+        return JsonResponse([], safe=False)
+
+    data = list(UserInfos.objects.filter(
+        tran_user_type_id=int(tran_with_id),   # 🔥 FIX HERE
+        tran_user_type__tran_type=6
+    ).values('id', 'user_name'))
+    print("tran_with_id:", tran_with_id, type(tran_with_id))
+    return JsonResponse(data, safe=False)
 
 
 def add_purchase_page(request):
@@ -584,7 +739,10 @@ def save_purchase(request):
         # ---- Form-level info ----
         store_id = data.get("store")
         location_id = data.get("location")
-        tran_type_with = data.get("supplier")
+        supplier_id = data.get("supplier")
+        tran_type_with = data.get("tran_type_with")
+        if not tran_type_with:
+         return JsonResponse({"success": False, "message": "Transaction With required"}, status=400)
         invoice = data.get("invoice")
         payment_method = data.get("payment_method")
         bill_amount = data.get("bill_amount") or 0
@@ -596,6 +754,7 @@ def save_purchase(request):
         # tran_date = data.get("tran_date") or timezone.now().strftime("%Y-%m-%d %H:%M:%S")
         tran_date = data.get("tran_date")
         # Date & Time Both
+
         if tran_date:
             tran_date = datetime.combine(
                 datetime.strptime(tran_date, "%Y-%m-%d").date(),
@@ -603,6 +762,7 @@ def save_purchase(request):
             )
         else:
             tran_date = timezone.localtime()
+        
         
         # Only Date
         # if tran_date:
@@ -644,12 +804,12 @@ def save_purchase(request):
         with connection.cursor() as cursor:
             cursor.execute("""
                 INSERT INTO transaction__mains
-                (tran_id, tran_type, tran_method, tran_type_with, store_id, 
+                (tran_id, tran_type, tran_method,tran_user, tran_type_with, store_id, 
                  loc_id, tran_date, status, invoice, bill_amount, discount, net_amount,
                  payment, due)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """, [
-                phr_code, tran_type, payment_method, tran_type_with, store_id,
+                phr_code, tran_type, payment_method,supplier_id, tran_type_with, store_id,
                 location_id, tran_date, status, invoice, bill_amount, 
                 discount, net_amount, payment, due
             ])
@@ -878,9 +1038,10 @@ def save_issue(request):
         # ---- Form-level info ----
         store_id = data.get("store")
         location_id = data.get("location")
-        tran_type_with = data.get("supplier")
+        tran_type_with = data.get("tran_type_with")
+        supplier_id = data.get("supplier")
         invoice = data.get("purchaseinvoice")
-        payment_method = data.get("payment_method")
+        tran_method = data.get("tran_method")
         bill_amount = data.get("bill_amount") or 0
         discount = data.get("discount") or 0
         net_amount = data.get("net_amount") or 0
@@ -927,12 +1088,12 @@ def save_issue(request):
         with connection.cursor() as cursor:
             cursor.execute("""
                 INSERT INTO transaction__mains
-                (tran_id, tran_type, tran_method, tran_type_with, store_id, loc_id,
+                (tran_id, tran_type, tran_method,tran_user,tran_type_with, store_id, loc_id,
                  tran_date, status, invoice, bill_amount, discount, net_amount,
                  payment, due)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """, [
-                phi_code, tran_type, payment_method, tran_type_with, store_id,
+                phi_code, tran_type, tran_method,supplier_id, tran_type_with, store_id,
                 location_id, tran_date, status, invoice, bill_amount,
                 discount, net_amount, receive, due
             ])
@@ -940,32 +1101,32 @@ def save_issue(request):
         # ---- Prepare details data ----
         details_data = []
         for row in products:
-            details_data.append([
-                phi_code,         # tran_id
-                tran_type,        # tran_type_with
-                payment_method,   # tran_method
-                invoice,          # invoice
-                location_id,      # loc_id
-                tran_type_with,   # tran_user
-                row[0],           # tran_head_id
-                row[1],           # quantity_actual
-                0,                # quantity
-                row[1],           # quantity_issue
-                0,                # quantity_return
-                row[5],           # unit_id
-                row[2],           # amount (cp)
-                row[4],           # tot_amount
-                row[2],           # cp
-                row[3],                # mrp (ignored)
-                row[6],           # expiry_date
-                store_id,         # store_id
-                tran_date,        # tran_date
-                status,           # status
-                discount,         # discount
-                receive,          # receive
-                0,          # payment
-                due               # due
-            ])
+                details_data.append([
+                    phi_code,
+                    tran_type,
+                    tran_method,
+                    invoice,
+                    location_id,
+                    tran_type_with,
+                    row["tran_head_id"],
+                    row["qty"],
+                    0,
+                    row["qty"],
+                    0,
+                    row.get("unit_id"),
+                    row["cp"],
+                    row["total"],
+                    row["cp"],
+                    row["mrp"],
+                    row.get("expiry"),
+                    store_id,
+                    tran_date,
+                    status,
+                    discount,
+                    receive,
+                    0,
+                    due
+                ])
 
         # ---- Insert into transaction__details ----
         query = """

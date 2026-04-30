@@ -527,6 +527,66 @@ function addToSelectedList(pname, cp, mrp, qty, total, productId = null, unitId 
     $("#discount, #advanced").on("input", function () {
         updateInvoiceSummary();
     });
+function loadTransactionWith() {
+    $.ajax({
+        url: window.APP_URLS.TRANSACTION_WITH_URL,
+        type: "GET",
+        success: function (data) {
+
+            console.log("TRANSACTION WITH DATA:", data);
+
+            let html = `<option value="">Select</option>`;
+
+            data.forEach(item => {
+                html += `<option value="${item.id}">
+                            ${item.tran_with_name || item.name}
+                         </option>`;
+            });
+
+            $("#transaction_with").html(html);
+        },
+        error: function (err) {
+            console.log("ERROR loading transaction_with:", err);
+        }
+    });
+}
+
+$("#transaction_with").on("change", function () {
+
+    let id = $(this).val();
+
+    if (!id) {
+        $("#supplier").html(`<option value="">Select Supplier</option>`);
+        return;
+    }
+
+    $("#supplier").html(`<option>Loading...</option>`);
+
+    $.ajax({
+        url: "/get-supplier-by-tran-with/",
+        data: { tran_with_id: id },
+        success: function (res) {
+
+            let html = `<option value="">Select Supplier</option>`;
+
+            if (!res || res.length === 0) {
+                html = `<option>No Supplier Found</option>`;
+            }
+
+            res.forEach(item => {
+                html += `<option value="${item.id}">
+                            ${item.user_name}
+                         </option>`;
+            });
+
+            $("#supplier").html(html);
+        },
+        error: function () {
+            $("#supplier").html(`<option>Failed</option>`);
+        }
+    });
+});
+    loadTransactionWith();
 
     loadProducts();
 });
@@ -554,25 +614,60 @@ $('#saveAllBtnIssue').on('click', function (e) {
     let purchaseList = [];
 
     // selected medicines table
-    $('#selectedMedicineList tr').each(function () {
-        let row = $(this);
-        let tranHeadId = row.data('product-id'); // make sure this exists
-        if (!tranHeadId) {
-            // fallback: try to find it from hidden input or alert
-            alert("⚠️ Missing product ID for: " + row.find('td:eq(1)').text());
-            return false; // stop saving
-        }
+    // $('#selectedMedicineList tr').each(function () {
+    //     let row = $(this);
+    //     let tranHeadId = row.data('product-id'); // make sure this exists
+    //     if (!tranHeadId) {
+    //         // fallback: try to find it from hidden input or alert
+    //         alert("⚠️ Missing product ID for: " + row.find('td:eq(1)').text());
+    //         return false; // stop saving
+    //     }
 
-        purchaseList.push([
-            parseInt(tranHeadId),                          // tran_head_id
-            parseFloat(row.find('td:eq(2)').text()) || 0,  // quantity
-            parseFloat(row.find('td:eq(3)').text()) || 0,  // cp
-            parseFloat(row.find('.mrp-col').text()) || 0,   //mrp
-            parseFloat(row.find('td:eq(6)').text()) || 0,  // total amount
-            row.data('unit-id') ?? null,      // ✅ FIX HERE
-            row.data('expiry') ?? null                   // expiry
-        ]);
+    //     // purchaseList.push([
+    //     //     parseInt(tranHeadId),                          // tran_head_id
+    //     //     parseFloat(row.find('td:eq(2)').text()) || 0,  // quantity
+    //     //     parseFloat(row.find('td:eq(3)').text()) || 0,  // cp
+    //     //     parseFloat(row.find('.mrp-col').text()) || 0,   //mrp
+    //     //     parseFloat(row.find('td:eq(6)').text()) || 0,  // total amount
+    //     //     row.data('unit-id') ?? null,      // ✅ FIX HERE
+    //     //     row.data('expiry') ?? null                   // expiry
+    //     // ]);
+    //     purchaseList.push({
+    //     tran_head_id: tranHeadId,
+    //     qty: qty,
+    //     cp: cp,
+    //     mrp: mrp,
+    //     total: total,
+    //     unit_id: row.data('unit-id') ?? null,
+    //     expiry: row.data('expiry') ?? null
+    // });
+    // });
+    $('#selectedMedicineList tr').each(function () {
+
+    let row = $(this);
+
+    let tranHeadId = row.data('product-id');
+
+    if (!tranHeadId) {
+        alert("⚠️ Missing product ID for: " + row.find('td:eq(1)').text());
+        return false;
+    }
+
+    let qty = parseFloat(row.find('td:eq(2)').text()) || 0;
+    let cp = parseFloat(row.find('td:eq(3)').text()) || 0;
+    let mrp = parseFloat(row.find('.mrp-col').text()) || 0;
+    let total = parseFloat(row.find('.row-total').text()) || (qty * cp);
+
+    purchaseList.push({
+        tran_head_id: tranHeadId,
+        qty: qty,
+        cp: cp,
+        mrp: mrp,
+        total: total,
+        unit_id: row.data('unit-id') ?? null,
+        expiry: row.data('expiry') ?? null
     });
+});
 
     if (!purchaseList.length) {
         alert("❌ No products selected!");
@@ -582,7 +677,11 @@ $('#saveAllBtnIssue').on('click', function (e) {
     let payload = {
         store: parseInt($('.store-select').val()) || null,
         location: parseInt($('.location-select').val()) || null,
-        supplier: parseInt($('.supplier-select').val()) || null,
+        supplier: parseInt($('#supplier').val()) || null,
+
+        tran_type_with: parseInt($('#transaction_with').val()) || null,
+        tran_type: 6,
+        tran_method: "receive",
         invoice: $('#purchaseinvoice').val(),
         payment_method: $('#payment_method').val(),
         bill_amount: parseFloat($('#invoiceAmount').val()) || 0,

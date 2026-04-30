@@ -28,7 +28,7 @@
                     <ul class="submenu child-menu">
                         <li><a href="/users/roles/">Roles</a></li>
                         <li><a href="/users/super-admin/">Super Admin</a></li>
-                        <li><a href="#">Admin</a></li> 
+                        <li><a href="/users/admin/">Admin</a></li> 
                     </ul>
                 </li>
 
@@ -82,6 +82,11 @@
                     <a href="#">Transaction Head</a>
                 </li>
 
+                <!-- Transaction With -->
+                <li class="menu-item">
+                    <a href="{% url 'transaction_with_page' %}">Transaction With</a>
+                </li>
+
                 <!-- Corporate -->
                 <li class="menu-item">
                     <a href="{% url 'corporates_page' %}">Corporate</a>
@@ -120,8 +125,8 @@
                 <li class="menu-item has-submenu">
                     <a href="#" class="submenu-toggle">Transactions <span class="arrow">›</span></a>
                     <ul class="submenu child-menu">
-                        <li><a href="#">Pharmacy Purchase </a></li>
-                        <li><a href="#">Pharmacy Issue </a></li>
+                        <li><a href="{% url 'payment_list' %}">Payment </a></li>
+                        <li><a href="{% url 'receive_list' %}">Receive</a></li>
                         <li><a href="#">Pharmacy Return </a></li>
                     </ul>
                 </li>

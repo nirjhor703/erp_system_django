@@ -42,6 +42,9 @@ urlpatterns = [
     path('get-divisions-combo/', views.get_divisions_combo, name='get_divisions_combo'),
     path('get-supplier-combo/', views.get_supplier_combo, name='get_supplier_combo'),
     path('get-store-combo/', views.get_store_combo, name='get_store_combo'),
+    path('get-transaction-with/', views.get_transaction_with_combo, name='get_transaction_with_combo'),
+    path('get-transaction-with-issue/', views.get_transaction_with_combo_issue, name='get_transaction_with_combo_issue'),
+    path('get-supplier-by-tran-with/', views.get_supplier_by_tran_with, name='get_supplier_by_tran_with'),
     path('transaction/get/<str:tran_id>/', views.get_transaction, name='get_transaction'),
 
 
@@ -67,7 +70,6 @@ urlpatterns = [
     # path('transaction/<str:tran_id>/edit-data/', views.get_transaction_for_edit, name='get_transaction_for_edit'),
 
 
-
-
+    path('purchase/report/pdf/', views.purchase_report_pdf, name='purchase_report_pdf'),
 
 ]

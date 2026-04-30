@@ -98,7 +98,8 @@ function setTodayDate() {
                     <td>${i + 1}</td>
                     <td>${p.tran_id}</td>
                     <td>${p.tran_date}</td>
-                    <td>${p.tran_supplier}</td>
+                    <td>${p.tran_type_with}</td>
+                    <td>${p.tran_user}</td>
                     <td style="text-align:right;">${p.bill_total}</td>
                     <td style="text-align:right;">${p.discount}</td>
                     <td style="text-align:right;">${p.net_total}</td>
@@ -217,4 +218,18 @@ function setTodayDate() {
         }
     });
 
+    $("#printReportBtn").on("click", function () {
+
+    let start_date = $("#start_date").val();
+    let end_date = $("#end_date").val();
+    let q = $("#supplierSearch").val().trim();
+
+    let url = `/purchase/report/pdf/?q=${encodeURIComponent(q)}&start_date=${start_date}&end_date=${end_date}`;
+
+    window.open(url, "_blank"); // direct download
 });
+
+
+});
+
+
