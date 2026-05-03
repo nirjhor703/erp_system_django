@@ -82,7 +82,7 @@
                         <!-- PAYMENT -->
                         <div class="col-md-3">
                             <label class="fw-semibold">Pay</label>
-                            <select id="payment_method" name="tran_method" class="form-control form-control-sm">
+                            <select id="payment_method" name="payment_method" class="form-control form-control-sm">
                                 <option value="cash">Cash</option>
                                 <option value="bkash">Bkash</option>
                                 <option value="nogod">Nogod</option>
@@ -267,7 +267,7 @@
         DIVISION_COMBO_URL: "{% url 'get_divisions_combo' %}",
         SUPPLIER_COMBO_URL: "{% url 'get_supplier_combo' %}",
         STORE_COMBO_URL: "{% url 'get_store_combo' %}",
-        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_combo' %}"
+        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_combo_payment' %}"
     };
 </script>
 

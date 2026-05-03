@@ -68,10 +68,10 @@
                         </div>
 
                         <!-- SUPPLIER -->
-                        <!-- <div class="col-md-6">
+                        <div class="col-md-6">
                             <label class="fw-semibold">Supplier Name</label>
                             <select id="supplier" name="supplier" class="form-control form-control-sm supplier-select"></select>
-                        </div> -->
+                        </div>
 
                         <!-- INVOICE -->
                         <div class="col-md-3">
@@ -82,7 +82,7 @@
                         <!-- RECEIVE -->
                         <div class="col-md-3">
                             <label class="fw-semibold">Pay</label>
-                            <select id="receive_method" name="tran_method" class="form-control form-control-sm">
+                            <select id="payment_method" name="tran_method" class="form-control form-control-sm">
                                 <option value="cash">Cash</option>
                                 <option value="bkash">Bkash</option>
                                 <option value="nogod">Nogod</option>
@@ -265,9 +265,9 @@
 <script>
     window.APP_URLS = {
         DIVISION_COMBO_URL: "{% url 'get_divisions_combo' %}",
-        // SUPPLIER_COMBO_URL: "{% url 'get_supplier_combo' %}",
+        SUPPLIER_COMBO_URL: "{% url 'get_supplier_combo' %}",
         // STORE_COMBO_URL: "{% url 'get_store_combo' %}",
-        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_users_combo_p' %}"
+        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_combo_r' %}"
     };
 </script>
 

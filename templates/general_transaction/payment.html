@@ -34,14 +34,14 @@
                             <select name="location" style="width:150px;" class="form-control-sm location-select"></select>
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="fw-semibold">Transaction With <span class="text-danger">*</span></label>
-                            <select id="transaction_with_type" class="form-control-sm form-control">
+                        <!-- <div class="col-md-4">
+                            <label class="fw-semibold">Self Transaction <span class="text-danger">*</span></label>
+                            <select id="self_transaction_with" class="form-control-sm form-control">
                                 <option value="">Select</option>
-                                <option value="3">General Supplier</option>
-                                <option value="21">General Client</option>
+                                <option value="2">General Supplier</option>
+                                <option value="54">General Client</option>
                             </select>
-                        </div>
+                        </div> -->
 
                         <div class="col-md-4">
                             <label class="fw-semibold">Date</label>
@@ -72,10 +72,10 @@
                         </div>
 
                         <!-- SUPPLIER -->
-                        <!-- <div class="col-md-6">
+                        <div class="col-md-6">
                             <label class="fw-semibold">Supplier Name</label>
                             <select id="supplier" name="supplier" class="form-control form-control-sm supplier-select"></select>
-                        </div> -->
+                        </div>
 
                         <!-- INVOICE -->
                         <div class="col-md-3">
@@ -269,9 +269,9 @@
 <script>
     window.APP_URLS = {
         DIVISION_COMBO_URL: "{% url 'get_divisions_combo' %}",
-        // SUPPLIER_COMBO_URL: "{% url 'get_supplier_combo' %}",
+        SUPPLIER_COMBO_URL: "{% url 'get_supplier_combo_g' %}",
         // STORE_COMBO_URL: "{% url 'get_store_combo' %}",
-        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_users_combo' %}"
+        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_combo_p' %}"
     };
 </script>
 

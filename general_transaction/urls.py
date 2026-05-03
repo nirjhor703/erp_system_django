@@ -9,7 +9,7 @@ urlpatterns = [
     path('product-search/', views.product_search, name='general-product-search'),
     path('payment/load/', views.payment_list_load, name='payment_list_load'),
     path('payment/report/pdf/', views.payment_report_pdf, name='payment_report_pdf'),
-    path('get-transaction-with-users-combo/', views.get_transaction_with_users_combo,name="get_transaction_with_users_combo"),
+    path('get-transaction-with-combo-p/', views.get_transaction_with_combo_p,name="get_transaction_with_combo_p"),
     path('payment/save-payment/', views.save_general_payment, name='save_payment'),
 
 
@@ -18,5 +18,7 @@ urlpatterns = [
     path('receive/save-receive/', views.save_general_receive, name='save_general_receive'),
     path('receive/load/', views.receive_list_load, name='receive_list_load'),
     path('receive/report/pdf/', views.receive_report_pdf, name='receive_report_pdf'),
-    path('get-transaction-with-users-combo-p/', views.get_transaction_with_users_combo_p,name="get_transaction_with_users_combo_p"),
+    path('get-transaction-with-combo-r/', views.get_transaction_with_combo_r,name="get_transaction_with_combo_r"),
+    path('get-supplier-by-tran-with-g/', views.get_supplier_by_tran_with_g, name='get_supplier_by_tran_with_g'),
+     path('get-supplier-combo-g/', views.get_supplier_combo_g, name='get_supplier_combo_g'),
 ]

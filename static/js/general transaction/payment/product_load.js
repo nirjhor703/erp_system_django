@@ -578,7 +578,7 @@ function updateSerial() {
     $("#discount, #advanced").on("input", function () {
         updateInvoiceSummary();
     });
-function loadTransactionUsers() {
+function loadTransactionWith() {
     $.ajax({
         url: window.APP_URLS.TRANSACTION_WITH_URL,
         type: "GET",
@@ -587,37 +587,41 @@ function loadTransactionUsers() {
             let html = `<option value="">Select</option>`;
 
             data.forEach(item => {
-                html += `<option value="${item.tran_user_type_id}">
-                            ${item.user_name}
-                         </option>`;
+                html += `<option value="${item.id}">${item.tran_with_name}</option>`;
             });
 
             $("#transaction_with").html(html);
         }
     });
 }
-// $("#transaction_with").on("change", function () {
 
-//     let id = $(this).val();
+$("#transaction_with").on("change", function () {
 
-//     if (!id) return;
+    let id = $(this).val();
 
-//     $.ajax({
-//         url: "/get-user-by-tran-with/",
-//         data: { tran_with_id: id },
-//         success: function (res) {
+    $("#supplier").html(`<option>Loading...</option>`);
 
-//             let html = `<option value="">Select</option>`;
+    if (!id) {
+        $("#supplier").html(`<option value="">Select Supplier</option>`);
+        return;
+    }
 
-//             res.forEach(item => {
-//                 html += `<option value="${item.id}">${item.user_name}</option>`;
-//             });
+    $.ajax({
+        url: "/general/get-supplier-by-tran-with-g/",
+        data: { tran_with_id: id },
+        success: function (res) {
 
-//             $("#supplier").html(html); // বা same dropdown use করলে সেটাই বসবে
-//         }
-//     });
-// });
-    loadTransactionUsers();
+            let html = `<option value="">Select Supplier</option>`;
+
+            res.forEach(item => {
+                html += `<option value="${item.id}">${item.user_name}</option>`;
+            });
+
+            $("#supplier").html(html);
+        }
+    });
+});
+    loadTransactionWith();
     loadProducts();
 
     // $('#productSearch').focus();
@@ -682,12 +686,20 @@ $('#saveAllBtn').on('click', function (e) {
         $('#advanced').focus().select();
         return;
     }    
+    let tranTypeWith =
+        $('#transaction_with').val() ||
+        $('#self_transaction_with').val();
+
+    if (!tranTypeWith) {
+        alert("⚠️ Please select Transaction With or Self Transaction!");
+        return;
+    }
+        
 
     let payload = {
         store: parseInt($('.store-select').val()) || null,
         location: parseInt($('.location-select').val()) || null,
-        // supplier: parseInt($('#supplier').val()) || null,
-
+        supplier: parseInt($('#supplier').val()) || null,
         tran_type_with: parseInt($('#transaction_with').val()) || null,
         tran_type: 1,          // Pharmacy
         tran_method: "payment",

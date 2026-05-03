@@ -427,7 +427,7 @@ def get_store_combo(request):
         "store_combo": data
     })
 
-def get_transaction_with_combo(request):
+def get_transaction_with_combo_payment(request):
     data = TransactionWiths.objects.filter(
         tran_type=6,
         tran_method='payment',

@@ -75,6 +75,27 @@ def payment_list(request):
     # return render(request, 'pharmacy/medicine_list.html')
     return render(request, 'general_transaction/payment_list.html')
 
+def get_supplier_combo_g(request):
+
+    cursor = connection.cursor()
+
+    sql = """
+        SELECT
+        m.id AS id,
+        m.manufacturer_name
+        FROM item__manufacturers m
+        ORDER BY m.manufacturer_name;
+    """
+    params = []
+
+    cursor.execute(sql, params)
+    data = dictfetchall(cursor)
+    print("DEBUG",data)
+
+    return JsonResponse({
+        "supplier_combo": data
+    })
+
 def payment_list_load(request):
     q = request.GET.get('q', '').strip()
     start_date = request.GET.get('start_date')
@@ -289,31 +310,26 @@ def get_divisions_combo(request):
 #         "supplier_combo": data
 #     })
 
-def get_transaction_with_users_combo(request):
+# def get_transaction_with_users_combo(request):
 
-    data = UserInfos.objects.filter(
-        tran_user_type__tran_type=1,
-        tran_user_type__tran_method='payment'
-    ).values(
-        'id',
-        'user_name',
-        'tran_user_type_id'
-    ).order_by('user_name')
+#     data = UserInfos.objects.filter(
+#         tran_user_type__tran_type=1,
+#         tran_user_type__tran_method='payment'
+#     ).values(
+#         'id',
+#         'user_name',
+#         'tran_user_type_id'
+#     ).order_by('user_name')
+
+#     return JsonResponse(list(data), safe=False)
+def get_transaction_with_combo_p(request):
+    data = TransactionWiths.objects.filter(
+        tran_type=1,
+        tran_method='payment',
+        status=1
+    ).values('id', 'tran_with_name')
 
     return JsonResponse(list(data), safe=False)
-
-# def get_user_by_tran_with_general(request):
-#     tran_with_id = request.GET.get('tran_with_id')
-
-#     if not tran_with_id:
-#         return JsonResponse([], safe=False)
-
-#     data = list(UserInfos.objects.filter(
-#         tran_user_type_id=tran_with_id,
-#         tran_user_type__tran_type=1
-#     ).values('id', 'user_name'))
-
-#     return JsonResponse(data, safe=False)
 
 @csrf_exempt
 @transaction.atomic
@@ -636,7 +652,7 @@ def save_general_receive(request):
 
         invoice = data.get("invoice")
         payment_method = data.get("payment_method")
-
+        tran_method = payment_method
         bill_amount = data.get("bill_amount") or 0
         discount = data.get("discount") or 0
         net_amount = data.get("net_amount") or 0
@@ -661,7 +677,7 @@ def save_general_receive(request):
             cursor.execute("""
                 SELECT tran_id 
                 FROM transaction__mains
-                WHERE tran_id LIKE 'GPA%'
+                WHERE tran_id LIKE 'GRE%'
                 ORDER BY tran_id DESC
                 LIMIT 1
             """)
@@ -682,7 +698,7 @@ def save_general_receive(request):
                  bill_amount, discount, net_amount, payment, due)
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """, [
-                tran_id, tran_type, payment_method, user_id, tran_type_with,
+                tran_id, tran_type, tran_method, user_id, tran_type_with,
                 store_id, location_id, tran_date, status, invoice,
                 bill_amount, discount, net_amount, payment, due
             ])
@@ -694,7 +710,7 @@ def save_general_receive(request):
             details_data.append([
                 tran_id,
                 tran_type,
-                payment_method,
+                tran_method,
                 invoice,
                 location_id,
                 tran_type_with,
@@ -736,17 +752,41 @@ def save_general_receive(request):
         print("🔥 GENERAL PAYMENT ERROR:", e)
         return JsonResponse({"success": False, "error": str(e)}, status=500)
     
-def get_transaction_with_users_combo_p(request):
+# def get_transaction_with_users_combo_p(request):
 
-        data = UserInfos.objects.filter(
-            tran_user_type__tran_type=1,
-            tran_user_type__tran_method='receive'
-        ).values(
-            'id',
-            'user_name',
-            'tran_user_type_id'
-        ).order_by('user_name')
+#         data = UserInfos.objects.filter(
+#             tran_user_type__tran_type=1,
+#             tran_user_type__tran_method='receive'
+#         ).values(
+#             'id',
+#             'user_name',
+#             'tran_user_type_id'
+#         ).order_by('user_name')
 
-        return JsonResponse(list(data), safe=False)
+#         return JsonResponse(list(data), safe=False)
+
+
+
+def get_transaction_with_combo_r(request):
+    data = TransactionWiths.objects.filter(
+        tran_type=1,
+        tran_method='receive',
+        status=1
+    ).values('id', 'tran_with_name')
+
+    return JsonResponse(list(data), safe=False)
+
+def get_supplier_by_tran_with_g(request):
+    tran_with_id = request.GET.get('tran_with_id')
+
+    if not tran_with_id:
+        return JsonResponse([], safe=False)
+
+    data = list(UserInfos.objects.filter(
+        tran_user_type_id=int(tran_with_id),   # 🔥 FIX HERE
+        tran_user_type__tran_type=1
+    ).values('id', 'user_name'))
+    print("tran_with_id:", tran_with_id, type(tran_with_id))
+    return JsonResponse(data, safe=False)
 
 

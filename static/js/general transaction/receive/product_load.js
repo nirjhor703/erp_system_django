@@ -578,46 +578,66 @@ function updateSerial() {
     $("#discount, #advanced").on("input", function () {
         updateInvoiceSummary();
     });
-function loadTransactionUsers() {
+function loadTransactionWith() {
     $.ajax({
         url: window.APP_URLS.TRANSACTION_WITH_URL,
         type: "GET",
         success: function (data) {
 
+            console.log("TRANSACTION WITH DATA:", data);
+
             let html = `<option value="">Select</option>`;
 
             data.forEach(item => {
-                html += `<option value="${item.tran_user_type_id}">
-                            ${item.user_name}
+                html += `<option value="${item.id}">
+                            ${item.tran_with_name || item.name}
                          </option>`;
             });
 
             $("#transaction_with").html(html);
+        },
+        error: function (err) {
+            console.log("ERROR loading transaction_with:", err);
         }
     });
 }
-// $("#transaction_with").on("change", function () {
 
-//     let id = $(this).val();
+$("#transaction_with").on("change", function () {
 
-//     if (!id) return;
+    let id = $(this).val();
 
-//     $.ajax({
-//         url: "/get-user-by-tran-with/",
-//         data: { tran_with_id: id },
-//         success: function (res) {
+    if (!id) {
+        $("#supplier").html(`<option value="">Select Supplier</option>`);
+        return;
+    }
 
-//             let html = `<option value="">Select</option>`;
+    $("#supplier").html(`<option>Loading...</option>`);
 
-//             res.forEach(item => {
-//                 html += `<option value="${item.id}">${item.user_name}</option>`;
-//             });
+    $.ajax({
+        url: "/general/get-supplier-by-tran-with-g/",
+        data: { tran_with_id: id },
+        success: function (res) {
 
-//             $("#supplier").html(html); // বা same dropdown use করলে সেটাই বসবে
-//         }
-//     });
-// });
-    loadTransactionUsers();
+            let html = `<option value="">Select Supplier</option>`;
+
+            if (!res || res.length === 0) {
+                html = `<option>No Supplier Found</option>`;
+            }
+
+            res.forEach(item => {
+                html += `<option value="${item.id}">
+                            ${item.user_name}
+                         </option>`;
+            });
+
+            $("#supplier").html(html);
+        },
+        error: function () {
+            $("#supplier").html(`<option>Failed</option>`);
+        }
+    });
+});
+    loadTransactionWith();
     loadProducts();
 
     // $('#productSearch').focus();
@@ -686,13 +706,13 @@ $('#saveAllBtn').on('click', function (e) {
     let payload = {
         store: parseInt($('.store-select').val()) || null,
         location: parseInt($('.location-select').val()) || null,
-        // supplier: parseInt($('#supplier').val()) || null,
+        supplier: parseInt($('#supplier').val()) || null,
 
         tran_type_with: parseInt($('#transaction_with').val()) || null,
         tran_type: 1,          // Pharmacy
         tran_method: "receive",
         invoice: $('#receiveinvoice').val(),
-        receive_method: $('#receive_method').val(),
+        payment_method: $('#payment_method').val(),
         bill_amount: parseFloat($('#invoiceAmount').val()) || 0,
         discount: parseFloat($('#discount').val()) || 0,
         net_amount: parseFloat($('#netAmount').val()) || 0,

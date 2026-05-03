@@ -579,13 +579,20 @@ function loadTransactionWith() {
         type: "GET",
         success: function (data) {
 
+            console.log("TRANSACTION WITH DATA:", data);
+
             let html = `<option value="">Select</option>`;
 
             data.forEach(item => {
-                html += `<option value="${item.id}">${item.tran_with_name}</option>`;
+                html += `<option value="${item.id}">
+                            ${item.tran_with_name || item.name}
+                         </option>`;
             });
 
             $("#transaction_with").html(html);
+        },
+        error: function (err) {
+            console.log("ERROR loading transaction_with:", err);
         }
     });
 }
@@ -594,12 +601,12 @@ $("#transaction_with").on("change", function () {
 
     let id = $(this).val();
 
-    $("#supplier").html(`<option>Loading...</option>`);
-
     if (!id) {
         $("#supplier").html(`<option value="">Select Supplier</option>`);
         return;
     }
+
+    $("#supplier").html(`<option>Loading...</option>`);
 
     $.ajax({
         url: "/get-supplier-by-tran-with/",
@@ -608,11 +615,20 @@ $("#transaction_with").on("change", function () {
 
             let html = `<option value="">Select Supplier</option>`;
 
+            if (!res || res.length === 0) {
+                html = `<option>No Supplier Found</option>`;
+            }
+
             res.forEach(item => {
-                html += `<option value="${item.id}">${item.tran_with_name}</option>`;
+                html += `<option value="${item.id}">
+                            ${item.user_name}
+                         </option>`;
             });
 
             $("#supplier").html(html);
+        },
+        error: function () {
+            $("#supplier").html(`<option>Failed</option>`);
         }
     });
 });
