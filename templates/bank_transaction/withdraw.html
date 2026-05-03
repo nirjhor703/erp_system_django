@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Add Payment{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="card shadow">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Add Withdraw</h5>
+
+                <!-- <a href="{% url 'medicine-list' %}"  -->
+                <a href="{% url 'withdraw_list' %}" 
+                    class="btn btn-light btn-sm">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <!-- LEFT SIDE -->
+                <div class="col-md-6">
+
+                    <!-- DATE / STORE / LOCATION -->
+                    <div class="row g-2 mb-1">
+                        <div class="col-md-4">
+                            <label class="fw-semibold" style="display:inline-block; width:120px;">Location</label>
+                            <select name="location" style="width:150px;" class="form-control-sm location-select"></select>
+                        </div>
+
+                        <!-- <div class="col-md-4">
+                            <label class="fw-semibold">Store <span class="text-danger">*</span></label>
+                            <select name="store" class="form-control-sm store-select"></select>
+                        </div> -->
+
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Date</label>
+                            <input type="date" id="tranDate" class="form-control-sm">
+                        </div>
+                    </div>
+
+                   <div class="row g-2 mb-1">
+
+                        <!-- TRAN TYPE -->
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Tran Type</label>
+                            <input type="text" id="tran_type" class="form-control form-control-sm bg-light text-muted"  value="Banks" readonly>
+                        </div>
+
+                        <!-- METHOD -->
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Method</label>
+                            <input type="text" id="tran_method" class="form-control form-control-sm bg-light text-muted"  value="Deposit" readonly>
+                        </div>
+
+                        <!-- TRANSACTION WITH -->
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Transaction With</label>
+                            <select id="transaction_with" class="form-control form-control-sm">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+
+                        <!-- SUPPLIER -->
+                        <!-- <div class="col-md-6">
+                            <label class="fw-semibold">Supplier Name</label>
+                            <select id="supplier" name="supplier" class="form-control form-control-sm supplier-select"></select>
+                        </div> -->
+
+                        <!-- INVOICE -->
+                        <div class="col-md-3">
+                            <label class="fw-semibold">Invoice No.</label>
+                            <input type="text" id="paymentinvoice" class="form-control form-control-sm" autocomplete="off">
+                        </div>
+
+                        <!-- PAYMENT -->
+                        <div class="col-md-3">
+                            <label class="fw-semibold">Pay</label>
+                            <select id="payment_method" name="tran_method" class="form-control form-control-sm">
+                                <option value="cash">Cash</option>
+                                <option value="bkash">Bkash</option>
+                                <option value="nogod">Nogod</option>
+                                <option value="rocket">Rocket</option>
+                                <option value="cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <!-- Dynamic Payment Fields -->
+                        <div id="dynamicPaymentFields" style="overflow: hidden; transition: all 0.3s ease;"></div>
+
+                    </div>
+
+                    <!-- PRODUCT SEARCH -->
+                    <div class="row mb-1">
+                        <div class="col-md-8">
+                            <label class="fw-semibold" style="display:inline-block; width:120px;">Product Name</label>
+                            <!-- <input type="text" id="productSearch" class="form-control form-control-sm" autocomplete="off"> -->
+                            <input type="text" id="productSearch" class="form-control-sm" style="width: 500px;" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="fw-semibold">ID</label>
+                            <input type="number" id="productid" class="form-control-sm" readonly>
+                        </div>
+                    </div>
+
+                    <!-- QTY / UNIT / EXPIRY -->
+                    <div class="row g-2 mb-1">
+                        <div class="col-md-3">
+                            <label class="fw-semibold">QTY</label>
+                            <input type="number" id="quantity" class="form-control-sm">
+                        </div>
+
+                        <div class="col-md-3" style="display:none;">
+                            <label class="fw-semibold">Unit</label>
+                            <select id="unit" class="form-control-sm">
+                                <option>PCS</option>
+                                <option>Box</option>
+                                <option>Strip</option>
+                                <option>Bottle</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3" style="display:none;">
+                            <label class="fw-semibold">Expiry Date</label>
+                            <input type="date" id="expiryDate" class="form-control-sm">
+                        </div>
+
+                        <div class="col-md-3 d-flex justify-content-end align-items-start">
+                            <button type="button" id="addProductBtn" class="btn btn-success px-4 mt-4">Add</button>
+                        </div>
+
+                    </div>
+
+                    <!-- PRICE -->
+                    <div class="row g-2 mb-1">
+                        <div class="col-md-4">
+                            <label class="fw-semibold">CP</label>
+                            <input type="number" id="cp" class="form-control-sm">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="fw-semibold">MRP</label>
+                            <input type="number" id="mrp" class="form-control-sm">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="fw-semibold">Total</label>
+                            <input type="number" id="total" class="form-control-sm">
+                        </div>
+                    </div>
+
+                    <!-- SELECTED TABLE -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Product Name</th>
+                                    <th>Bank</th>
+                                    <th>Amount</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selectedPaymentListPayment"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT SIDE -->
+                <div class="col-md-6">
+
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white text-center">
+                            Product List
+                        </div>
+
+                        <div class="table-responsive" style="max-height:300px; overflow-y:auto;">
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th style="width: 5%;">SL</th>
+                                        <th style="width: 20%;">Name</th>
+                                        <th style="width: 20%;">Generic</th>
+                                        <th style="width: 15%;">Manufacture</th>
+                                        <th style="width: 10%;">Form</th>
+                                        <th style="width: 8%;">Qty</th>
+                                        <th style="width: 8%;">CP</th>
+                                        <th style="width: 8%;">MRP</th>
+                                        <th style="width: 6%;">Select</th>                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentListTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- INVOICE SUMMARY -->
+                    <div class="card p-3 shadow-sm">
+                        <div class="row mb-2">
+                            <label class="col-md-4 fw-semibold">Invoice Amount</label>
+                            <div class="col-md-8">
+                                <input type="number" id="invoiceAmount" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <label class="col-md-4 fw-semibold">Discount(%)</label>
+                            <div class="col-md-8">
+                                <input type="number" id="discount" class="form-control" value="0">
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <label class="col-md-4 fw-semibold">Net Amount</label>
+                            <div class="col-md-8">
+                                <input type="number" id="netAmount" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <label class="col-md-4 fw-semibold">Advance</label>
+                            <div class="col-md-8">
+                                <input type="number" id="advanced" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 fw-semibold">Balance</label>
+                            <div class="col-md-8">
+                                <input type="number" id="balance" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                        <!-- <div class="text-center">
+                            <button type="submit" class="btn btn-primary px-5">Submit</button>
+                        </div> -->
+
+                        <div class="text-center">
+                            <button type="button" id="saveAllBtn" class="btn btn-primary px-5">Save</button>
+                        </div>
+                                                
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function () {
+
+    // Ensure Cheque option exists
+    if ($("#payment_method option[value='cheque']").length === 0) {
+        $("#payment_method").append('<option value="cheque">Cheque</option>');
+    }
+
+    // Ensure dynamic container exists
+    if ($("#dynamicPaymentFields").length === 0) {
+        $("#payment_method").closest(".col-md-3").after(`
+            <div class="col-md-3">
+                <div id="dynamicPaymentFields"></div>
+            </div>
+        `);
+    }
+
+    // 🔹 Render Field (clean replace, no animation bug)
+    function renderPaymentField(method) {
+
+        let html = "";
+
+        if (method === "bkash") {
+            html = `
+                <label class="fw-semibold">Bkash Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="01XXXXXXXXX" maxlength="11">
+            `;
+        }
+
+        else if (method === "nogod") {
+            html = `
+                <label class="fw-semibold">Nagad Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="01XXXXXXXXX" maxlength="11">
+            `;
+        }
+
+        else if (method === "rocket") {
+            html = `
+                <label class="fw-semibold">Rocket Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="01XXXXXXXXX" maxlength="11">
+            `;
+        }
+
+        else if (method === "cheque") {
+            html = `
+                <label class="fw-semibold">Cheque Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="Enter Cheque Number">
+            `;
+        }
+
+        // 🔥 IMPORTANT: always clear then set (fix for your bug)
+        $("#dynamicPaymentFields").empty().html(html);
+    }
+
+    // 🔹 Handle Method Change
+    function handlePaymentMethodChange() {
+
+        let method = $("#payment_method").val();
+
+        // 🔥 ALWAYS CLEAR FIRST (fixes your issue)
+        $("#dynamicPaymentFields").empty();
+
+        // ✅ CASH → total editable
+        if (method === "cash") {
+            $("#total").prop("readonly", false);   // 🔥 FIXED
+            return;
+        }
+
+        // Other methods → total readonly
+        $("#total").prop("readonly", true);
+
+        // Render dynamic field
+        renderPaymentField(method);
+    }
+
+    // Trigger change
+    $("#payment_method").on("change", handlePaymentMethodChange);
+
+    // Run once on load
+    handlePaymentMethodChange();
+
+    // 🔹 Validation
+    function validatePaymentExtra() {
+
+        let method = $("#payment_method").val();
+        let number = ($("#payment_extra_number").val() || "").trim();
+
+        if (method === "bkash" || method === "nogod" || method === "rocket") {
+
+            if (!/^01\d{9}$/.test(number)) {
+                alert("❌ Number must be 11 digits and start with 01");
+                $("#payment_extra_number").focus();
+                return false;
+            }
+        }
+
+        if (method === "cheque") {
+
+            if (!number) {
+                alert("❌ Please enter cheque number");
+                $("#payment_extra_number").focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 🔹 Attach validation before save
+    $("#saveAllBtn").on("click", function (e) {
+
+        if (!validatePaymentExtra()) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return false;
+        }
+
+    });
+
+});
+</script>
+<script>
+    window.APP_URLS = {
+        DIVISION_COMBO_URL: "{% url 'get_divisions_combo' %}",
+        // SUPPLIER_COMBO_URL: "{% url 'get_supplier_combo' %}",
+        // STORE_COMBO_URL: "{% url 'get_store_combo' %}",
+        TRANSACTION_WITH_URL: "{% url 'get_transaction_with_users_combo' %}",
+        BANK_COMBO_URL: "{% url 'get_bank_combo' %}",
+    };
+</script>
+
+<script src="{% static 'js/location/location_load_combo.js' %}"></script>
+<script src="{% static 'js/bank_transaction/withdraw/product_load.js' %}"></script>
+{% endblock %}

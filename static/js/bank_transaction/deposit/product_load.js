@@ -3,9 +3,8 @@ $(document).ready(function () {
     $("#cp").val(0).prop("readonly", true);
     $("#mrp").val(0).prop("readonly", true);
 
-    // default CP & MRP
-    // $("#cp").val(0);
-    // $("#mrp").val(0);
+    $("#total").prop("readonly", false);
+
     function setTodayDate() {
         const today = new Date();
         const localDate =
@@ -14,34 +13,33 @@ $(document).ready(function () {
             String(today.getDate()).padStart(2, "0");
 
         document.getElementById("tranDate").value = localDate;
-        document.getElementById("expiryDate").value = localDate;
+
+        if (document.getElementById("expiryDate")) {
+            document.getElementById("expiryDate").value = localDate;
+        }
     }
 
     setTodayDate();    
 
-    // $('#addMedicineModal').on('shown.bs.modal', function () {
-    //     $("#productSearch").focus();
-    // });
-
     let products = [];    
-    // let currentIndex = 0;
+    let currentIndex = 0;
     let currentRequest = null;
     let offset = 0;
     let query = "";
     let isLoading = false;
     let limit = 50;
+    let hasMore = true;
 
     function loadProducts(q = "", newOffset = 0, append = false) {
 
         if (isLoading) return;
+        if (!hasMore && append) return;
 
-        // 🛑 Abort previous request
         if (currentRequest) {
             currentRequest.abort();
         }
 
         isLoading = true;
-        // currentIndex = 0;
 
         currentRequest = $.ajax({
             url: "/bank_tran/product-search/",
@@ -57,11 +55,12 @@ $(document).ready(function () {
                     products = fetched;
                     offset = newOffset;
                     
-                    // ✅ Reset ONLY if this is new search
                     if (newOffset === 0) {
                         currentIndex = 0;
                     }
                 }
+
+                hasMore = fetched.length === limit;
 
                 renderTable();
                 isLoading = false;
@@ -85,12 +84,12 @@ $(document).ready(function () {
                     class="${i === currentIndex ? 'table-active' : ''}">
                     <td>${i + 1}</td>
                     <td>${p.name}</td>
-                    <td>${p.category_name}</td>
-                    <td>${p.manufacturer}</td>
-                    <td>${p.form}</td>
-                    <td>${p.quantity}</td>
-                    <td>${p.cp}</td>
-                    <td>${p.mrp}</td>
+                    <td>${p.category_name || ""}</td>
+                    <td>${p.manufacturer || ""}</td>
+                    <td>${p.form || ""}</td>
+                    <td>${p.quantity || 0}</td>
+                    <td>${p.cp || 0}</td>
+                    <td>${p.mrp || 0}</td>
                     <td>${p.id}</td>
                 </tr>
             `;
@@ -99,7 +98,6 @@ $(document).ready(function () {
         scrollToActiveRow();
     }
 
-    
     function scrollToActiveRow() {
         let $activeRow = $("#paymentListTableBody tr.table-active");
 
@@ -111,7 +109,8 @@ $(document).ready(function () {
     }    
   
     let typingTimer;
-    let typingDelay = 300; // 300ms delay
+    let typingDelay = 300;
+
     $("#productSearch").on("input", function () {
 
         clearTimeout(typingTimer);
@@ -122,6 +121,7 @@ $(document).ready(function () {
 
             query = value;
             offset = 0;
+            hasMore = true;
 
             loadProducts(query, offset, false);
 
@@ -143,8 +143,10 @@ $(document).ready(function () {
             }
 
             if (currentIndex >= products.length - 5) {
-                offset += limit;
-                loadProducts(query, offset, true);
+                if (hasMore && !isLoading) {
+                    offset += limit;
+                    loadProducts(query, offset, true);
+                }
             }
         }
 
@@ -159,42 +161,7 @@ $(document).ready(function () {
 
     });
 
- 
-    // $(document).on("keydown", function (e) {
 
-    //     if (e.key !== "Enter") return;
-
-    //     if ($('#productSearch, #quantity, #addProductBtn').is(':focus')) return;
-
-    //     // If products not loaded → do nothing
-    //     if (products.length === 0) return;
-
-    //     // If Enter pressed inside search AND no row selected yet
-    //     if ($("#productSearch").is(":focus") && currentIndex === 0) {
-    //         // Allow selection of first row
-    //         e.preventDefault();
-    //     }
-
-    //     // If a valid row is selected
-    //     if (currentIndex >= 0 && currentIndex < products.length) {
-
-    //         e.preventDefault();
-
-    //         let selectedProduct = products[currentIndex];
-    //         if (!selectedProduct) return;
-
-    //         $("#productSearch").val(selectedProduct.name);
-    //         $("#productid").val(selectedProduct.id);
-    //         $("#cp").val(selectedProduct.cp);
-    //         $("#mrp").val(selectedProduct.mrp);
-    //         // Focus quantity AFTER current event loop
-    //         setTimeout(function() {
-    //             $("#quantity").focus().select();
-    //         }, 0);
-    //     }
-    // });    
-
-    // When Enter pressed in #productSearch
     $('#productSearch').on('keydown', function(e) {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -206,17 +173,15 @@ $(document).ready(function () {
 
             $(this).val(selectedProduct.name);
             $("#productid").val(selectedProduct.id);
-            $("#cp").val(selectedProduct.cp);
-            $("#mrp").val(selectedProduct.mrp);
+            $("#cp").val(selectedProduct.cp || 0);
+            $("#mrp").val(selectedProduct.mrp || 0);
 
-            // Focus quantity after current event
             setTimeout(function() {
-                $("#addProductBtn").focus().select();
+                $("#total").focus().select();
             }, 0);
         }
     });
 
-    // When Enter pressed in #quantity → focus Add button
     $('#quantity').on('keydown', function(e) {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -226,103 +191,100 @@ $(document).ready(function () {
         }
     });
 
-    // When Enter pressed on Add button → trigger click
+    $('#total').on('keydown', function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            setTimeout(function() {
+                $("#addProductBtn").focus();
+            }, 0);
+        }
+    });
+
     $('#addProductBtn').on('keydown', function(e) {
         if (e.key === "Enter") {
             e.preventDefault();
             $(this).click();
         }
     });
-$("#addProductBtn").off("click").on("click", function () {
 
-    let productId = $('#productid').val().trim();
-    let name = $('#productSearch').val().trim();
-    let qty = Number($('#quantity').val().trim());
-    let cp = Number($('#cp').val().trim());
-    let mrp = Number($('#mrp').val().trim());
-    let expiry = $('#expiryDate').val().trim();
 
-    let total = qty * cp;
+    $("#addProductBtn").off("click").on("click", function () {
 
-    let existingRow = $(this).data("editRow");
+        let productId = $('#productid').val().trim();
+        let name = $('#productSearch').val().trim();
 
-    // ✅ VALIDATION (same as your old)
-    if (!name) {
-        alert("⚠️ Please enter product name!");
-        $('#productSearch').focus();
-        return;
-    }
+        let qty = 1;
+        let cp = 0;
+        let mrp = Number($('#mrp').val().trim()) || 0;
+        let expiry = $('#expiryDate').val().trim() || null;
 
-    // if (isNaN(qty) || qty <= 0) {
-    //     alert("⚠️ Please enter a valid quantity!");
-    //     $('#quantity').focus().select();
-    //     return;
-    // }
+        let total = parseFloat($('#total').val()) || 0;
 
-    // if (isNaN(cp) || cp <= 0) {
-    //     alert("⚠️ Please enter a valid cost price!");
-    //     $('#cp').focus().select();
-    //     return;
-    // }
+        let bankId = $("#transaction_with").val();
+        let bankName = $("#transaction_with option:selected").text().trim();
 
-    // if (isNaN(mrp) || mrp <= 0) {
-    //     alert("⚠️ Please enter a valid MRP!");
-    //     $('#mrp').focus().select();
-    //     return;
-    // }
+        let existingRow = $(this).data("editRow");
 
-    // if (mrp <= cp) {
-    //     alert("⚠️ MRP must be greater than CP!");
-    //     $('#mrp').focus().select();
-    //     return;
-    // }
-
-    // ✅ DUPLICATE CHECK (only for ADD, not edit)
-    if (!existingRow) {
-        let duplicate = false;
-
-        $("#selectedPaymentListPayment tr").each(function () {
-            if ($(this).data("product-id") == productId) {
-                duplicate = true;
-                return false;
-            }
-        });
-
-        if (duplicate) {
-            alert("❌ This product is already selected!");
-            $('#productSearch').focus().select();
+        if (!productId || !name) {
+            alert("⚠️ Please select product name!");
+            $('#productSearch').focus();
             return;
         }
-    }
 
-    // ✏️ UPDATE MODE
-    if (existingRow) {
+        if (!bankId) {
+            alert("⚠️ Please select bank!");
+            $("#transaction_with").focus();
+            return;
+        }
 
-        existingRow.find("td:eq(2)").text(name);
-        existingRow.find("td:eq(3)").text(qty);
-        existingRow.find("td:eq(4)").text(cp);
-        existingRow.find("td:eq(5)").text(mrp);
-        existingRow.find("td:eq(6)").text(expiry);
-        existingRow.find("td:eq(7)").text(total);
+        if (total <= 0) {
+            alert("⚠️ Please enter valid amount!");
+            $("#total").focus().select();
+            return;
+        }
 
-        $(this).removeData("editRow");
+        if (!existingRow) {
+            let duplicate = false;
 
-        // optional UX
-        $("#addProductBtn").text("Add");
+            $("#selectedPaymentListPayment tr").each(function () {
+                if ($(this).data("product-id") == productId && $(this).data("bank-id") == bankId) {
+                    duplicate = true;
+                    return false;
+                }
+            });
 
-    } else {
-        // ➕ ADD MODE
-        addToSelectedList(productId, name, qty, cp, mrp, expiry, total);
-    }
+            if (duplicate) {
+                alert("❌ This product with selected bank is already selected!");
+                $('#productSearch').focus().select();
+                return;
+            }
+        }
 
-    clearInputs();
-    updateInvoiceSummary();
+        if (existingRow) {
 
-    setTimeout(function () {
-        $('#productSearch').focus().select();
-    }, 100);
+            existingRow.attr("data-product-id", productId);
+            existingRow.attr("data-bank-id", bankId);
 
-});
+            existingRow.find("td:eq(1)").text(name);
+            existingRow.find("td:eq(2)").text(bankName);
+            existingRow.find("td:eq(3)").text(total.toFixed(2));
+
+            $(this).removeData("editRow");
+            $("#addProductBtn").text("Add");
+
+        } else {
+            addToSelectedList(productId, name, bankId, bankName, qty, cp, mrp, expiry, total);
+        }
+
+        clearInputs();
+        updateInvoiceSummary();
+
+        setTimeout(function () {
+            $('#productSearch').focus().select();
+        }, 100);
+
+    });
+
 
     function updateHighlight() {
 
@@ -344,14 +306,21 @@ $("#addProductBtn").off("click").on("click", function () {
 
     $(document).on("click", "#paymentListTableBody tr", function () {
 
-        // Remove previous highlight
         $("#paymentListTableBody tr").removeClass("table-active");
 
-        // Highlight clicked row
         $(this).addClass("table-active");
 
-        // Optional: update currentIndex
         currentIndex = $(this).data("index");
+
+        let selectedProduct = products[currentIndex];
+        if (!selectedProduct) return;
+
+        $("#productSearch").val(selectedProduct.name);
+        $("#productid").val(selectedProduct.id);
+        $("#cp").val(selectedProduct.cp || 0);
+        $("#mrp").val(selectedProduct.mrp || 0);
+
+        $("#total").focus().select();
 
     });
 
@@ -361,17 +330,16 @@ $("#addProductBtn").off("click").on("click", function () {
         if (e.key === "ArrowDown") {
             e.preventDefault();
 
-            // Move highlight down
             if (currentIndex < products.length - 1) {
                 currentIndex++;
                 updateHighlight();
                 $("#paymentListTableBody tr").eq(currentIndex).focus();
             }
 
-            // 🔥 Load more when reaching last 5 rows
             if (
                 currentIndex >= products.length - 5 &&
-                !isLoading
+                !isLoading &&
+                hasMore
             ) {
                 offset += limit;
                 loadProducts(query, offset, true);
@@ -396,45 +364,33 @@ $("#addProductBtn").off("click").on("click", function () {
 
         if ($this.scrollTop() + $this.innerHeight() >= this.scrollHeight - 10) {
 
-            offset += limit;
-
-            loadProducts(query, offset, true);
+            if (hasMore && !isLoading) {
+                offset += limit;
+                loadProducts(query, offset, true);
+            }
         }
     });
 
 
-    //========================================================
+    $("#quantity").off("input");
+    $("#cp").off("input");
 
 
-    // PRICE × QTY calculation
-    $("#quantity").on("input", function () {
-        let quantity = parseFloat($(this).val()) || 0;
-        let cp = parseFloat($("#cp").val()) || 0;
-        let total = quantity * cp;
-        $("#total").val(total.toFixed(2));
-    });
-
-    $("#cp").on("input", function () {
-        let cp = parseFloat($(this).val()) || 0;
-        let quantity = parseFloat($("#quantity").val()) || 0;
-        let total = quantity * cp;
-        $("#total").val(total.toFixed(2));
-    });
-
-    // ADD to selected list
-    function addToSelectedList(productId, pname, qty, cp, mrp, expiry, total) {
+    function addToSelectedList(productId, pname, bankId, bankName, qty, cp, mrp, expiry, total) {
 
         let row = `
-            <tr data-product-id="${productId}">
-            
+            <tr 
+                data-product-id="${productId}"
+                data-bank-id="${bankId}"
+                data-qty="${qty}"
+                data-cp="${cp}"
+                data-mrp="${mrp}"
+                data-expiry="${expiry || ""}"
+            >
                 <td>${$("#selectedPaymentListPayment tr").length + 1}</td>
-                <td style="display:none;">${productId}</td>
                 <td>${pname}</td>
-                <td>${qty}</td>
-                <td>${cp}</td>
-                <td style="display:none;">${mrp}</td>
-                <td style="display:none;">${expiry}</td>
-                <td>${total}</td>
+                <td>${bankName}</td>
+                <td>${total.toFixed(2)}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-primary edit-item">Edit</button>
                     <button type="button" class="btn btn-sm btn-danger remove-item">Remove</button>
@@ -444,67 +400,63 @@ $("#addProductBtn").off("click").on("click", function () {
 
         $("#selectedPaymentListPayment").append(row);
 
-        // Clear input fields
         $("#productid").val("");
         $("#productSearch").val("");
-        $("#cp").val("");
-        $("#mrp").val("");
-        $("#quantity").val("");
+        $("#cp").val("0");
+        $("#mrp").val("0");
+        $("#quantity").val("1");
         $("#total").val("");
 
-        // updateSelectedTotal();
         updateInvoiceSummary(); 
     }
 
     $(document).on("click", ".edit-item", function () {
 
-    let row = $(this).closest("tr");
+        let row = $(this).closest("tr");
 
-    let productId = row.find("td:eq(1)").text();
-    let name = row.find("td:eq(2)").text();
-    let qty = row.find("td:eq(3)").text();
-    let cp = row.find("td:eq(4)").text();
-    let mrp = row.find("td:eq(5)").text();
-    let expiry = row.find("td:eq(6)").text();
+        let productId = row.data("product-id");
+        let bankId = row.data("bank-id");
 
-    // form এ বসাও
-    $("#productid").val(productId);
-    $("#productSearch").val(name);
-    $("#quantity").val(qty);
-    $("#cp").val(cp);
-    $("#mrp").val(mrp);
-    $("#expiryDate").val(expiry);
+        let name = row.find("td:eq(1)").text();
+        let amount = row.find("td:eq(3)").text();
 
-    // এই row টা save করে রাখো (important)
-    $("#addProductBtn").data("editRow", row);
-});
+        $("#productid").val(productId);
+        $("#productSearch").val(name);
+        $("#transaction_with").val(bankId);
+        $("#total").val(amount);
 
+        $("#addProductBtn").data("editRow", row);
+        $("#addProductBtn").text("Update");
 
-
-function clearInputs() {
-    $("#productid").val("");
-    $("#productSearch").val("");
-    $("#cp").val("0");
-    $("#mrp").val("0");
-    $("#quantity").val("1");
-    $("#total").val("");
-    $("#expiryDate").val("");
-}
-
-function updateSerial() {
-    $("#selectedPaymentListPayment tr").each(function(index) {
-        $(this).find("td:eq(0)").text(index + 1);
+        $("#total").focus().select();
     });
-}
 
-    // Remove button functionality
+
+    function clearInputs() {
+        $("#productid").val("");
+        $("#productSearch").val("");
+        $("#cp").val("0");
+        $("#mrp").val("0");
+        $("#quantity").val("1");
+        $("#total").val("");
+        $("#expiryDate").val("");
+        $("#addProductBtn").removeData("editRow").text("Add");
+    }
+
+    function updateSerial() {
+        $("#selectedPaymentListPayment tr").each(function(index) {
+            $(this).find("td:eq(0)").text(index + 1);
+        });
+    }
+
     $(document).on("click", ".remove-item", function () {
-        // let pname = $(this).closest("tr").find('td:eq(1)').text();
 
-        if (confirm("Are you sure to remove:\n\n" + $(this).closest("tr").find('td:eq(1)').text() + " ?")) {
+        let pname = $(this).closest("tr").find('td:eq(1)').text();
+
+        if (confirm("Are you sure to remove:\n\n" + pname + " ?")) {
             $(this).closest("tr").remove();
         }
-        // Update SL numbers
+
         $("#selectedPaymentListPayment tr").each(function (index) {
             $(this).find("td:first").text(index + 1);
         });
@@ -512,45 +464,28 @@ function updateSerial() {
         $('#productSearch').focus();
         updateSerial();
         updateInvoiceSummary();
-        // Update total
-        // updateSelectedTotal();
     });
 
-    // Function to calculate bottom total
-    // function updateSelectedTotal() {
-    //     let total = 0;
-    //     $("#selectedMedicineListPurchase tr").each(function () {
-    //         let cp = parseFloat($(this).find("td:eq(3)").text()) || 0;
-    //         let qty = parseFloat($(this).find("td:eq(2)").text()) || 0;
-    //         total += cp * qty;
-    //     });
-    //     $("#bottomTotal").text(total.toFixed(2));
-    // }
 
     function updateInvoiceSummary() {
         let invoiceAmount = 0;
 
-        // Sum row totals
         $("#selectedPaymentListPayment tr").each(function () {
-            let rowTotal = parseFloat($(this).find("td:eq(7)").text()) || 0;
+            let rowTotal = parseFloat($(this).find("td:eq(3)").text()) || 0;
             invoiceAmount += rowTotal;
         });
 
         let discountPercent = parseFloat($("#discount").val()) || 0;
         let advance = parseFloat($("#advanced").val()) || 0;
 
-        // Calculate discount amount (percentage)
         let discountAmount = (invoiceAmount * discountPercent) / 100;
 
-        // Net amount after discount
         let netAmount = invoiceAmount - discountAmount;
         if (netAmount < 0) netAmount = 0;
 
-        // Balance after advance
         let balance = netAmount - advance;
         if (balance < 0) balance = 0;
 
-        // Set values
         $("#invoiceAmount").val(invoiceAmount.toFixed(2));
         $("#netAmount").val(netAmount.toFixed(2));
         $("#balance").val(balance.toFixed(2));
@@ -560,77 +495,46 @@ function updateSerial() {
         let total = 0;
 
         $("#selectedPaymentListPayment tr").each(function () {
-            let rowTotal = parseFloat($(this).find(".item-total").text()) || 0;
+            let rowTotal = parseFloat($(this).find("td:eq(3)").text()) || 0;
             total += rowTotal;
         });
 
         $("#grandTotal").text(total.toFixed(2));
     }
 
-    // $(document).on("click", ".deleteRow", function () {
-    //     alert("Are you sure to remove");
-    //     $(this).closest("tr").remove();
-    //     updateGrandTotal();
-    //     updateSelectedTotal();
-    //     updateInvoiceSummary();
-    // });
-
     $("#discount, #advanced").on("input", function () {
         updateInvoiceSummary();
     });
 
 
-function loadTransactionUsers() {
-    $.ajax({
-        url: window.APP_URLS.BANK_COMBO_URL,
-        type: "GET",
-        success: function (response) {
+    function loadTransactionUsers() {
+        $.ajax({
+            url: window.APP_URLS.BANK_COMBO_URL,
+            type: "GET",
+            success: function (response) {
 
-            let banks = response.bank_combo || [];
-            let html = `<option value="">Select Bank</option>`;
+                let banks = response.bank_combo || [];
+                let html = `<option value="">Select Bank</option>`;
 
-            banks.forEach(item => {
-                html += `<option value="${item.id}">
-                            ${item.name}
-                         </option>`;
-            });
+                banks.forEach(item => {
+                    html += `<option value="${item.id}">
+                                ${item.name}
+                             </option>`;
+                });
 
-            $("#transaction_with").html(html);
-        },
-        error: function (xhr) {
-            console.log("Bank load error:", xhr.responseText);
-            alert("Failed to load bank list");
-        }
-    });
-}
-// $("#transaction_with").on("change", function () {
+                $("#transaction_with").html(html);
+            },
+            error: function (xhr) {
+                console.log("Bank load error:", xhr.responseText);
+                alert("Failed to load bank list");
+            }
+        });
+    }
 
-//     let id = $(this).val();
-
-//     if (!id) return;
-
-//     $.ajax({
-//         url: "/get-user-by-tran-with/",
-//         data: { tran_with_id: id },
-//         success: function (res) {
-
-//             let html = `<option value="">Select</option>`;
-
-//             res.forEach(item => {
-//                 html += `<option value="${item.id}">${item.user_name}</option>`;
-//             });
-
-//             $("#supplier").html(html); // বা same dropdown use করলে সেটাই বসবে
-//         }
-//     });
-// });
     loadTransactionUsers();
     loadProducts();
 
-    // $('#productSearch').focus();
 });
-// get CSRF from cookie
-// get CSRF from cookie
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -652,26 +556,23 @@ $('#saveAllBtn').on('click', function (e) {
 
     let paymentList = [];
 
-    // selected medicines table
     $('#selectedPaymentListPayment tr').each(function () {
         let row = $(this);
-        // array style for Python index-access
-        // purchaseList.push([
-        //     parseFloat(row.find('td:eq(1)').text()) || 0,    // 0. productid / tran_head_id
-        //     parseFloat(row.find('td:eq(3)').text()) || 0,    // 1. quantity
-        //     parseFloat(row.find('td:eq(4)').text()) || 0,    // 2. cp
-        //     parseFloat(row.find('td:eq(5)').text()) || 0,    // 3. mrp
-        //     row.find('td:eq(6) input').val(),   // 4. expiry
-        //     parseFloat(row.find('td:eq(7)').text()) || 0,    // 5. tot_amount
-        // ]);
+
+        let productId = row.data('product-id');
+        let qty = parseFloat(row.data('qty')) || 1;
+        let amount = parseFloat(row.find('td:eq(3)').text()) || 0;
+        let mrp = parseFloat(row.data('mrp')) || 0;
+        let expiry = row.data('expiry') || null;
+
         paymentList.push([
-        row.data('product-id'),                         // product id
-        parseFloat(row.find('td:eq(3)').text()) || 0,   // qty
-        parseFloat(row.find('td:eq(4)').text()) || 0,   // cp
-        parseFloat(row.find('td:eq(5)').text()) || 0,   // mrp
-        row.find('td:eq(6)').text() || null,            // expiry
-        parseFloat(row.find('td:eq(7)').text()) || 0    // total
-    ]);
+            productId,
+            qty,
+            amount,
+            mrp,
+            expiry,
+            amount
+        ]);
     });
 
     if (!paymentList.length) {
@@ -682,7 +583,7 @@ $('#saveAllBtn').on('click', function (e) {
     let receive = parseFloat($('#advanced').val()) || 0;
     let net_amount = parseFloat($('#netAmount').val()) || 0;
 
-    console.log("Receive:", receive, "Net:", net_amount); // check values
+    console.log("Receive:", receive, "Net:", net_amount);
 
     if (receive > net_amount) {
         alert("⚠️ Invalid Receive/Advance Amount! It cannot exceed Net Amount.");
@@ -693,10 +594,9 @@ $('#saveAllBtn').on('click', function (e) {
     let payload = {
         store: parseInt($('.store-select').val()) || null,
         location: parseInt($('.location-select').val()) || null,
-        // supplier: parseInt($('#supplier').val()) || null,
 
         tran_type_with: parseInt($('#transaction_with').val()) || null,
-        tran_type: 4,          // Pharmacy
+        tran_type: 4,
         tran_method: "payment",
         invoice: $('#paymentinvoice').val(),
         payment_method: $('#payment_method').val(),
@@ -718,7 +618,7 @@ $('#saveAllBtn').on('click', function (e) {
         data: JSON.stringify(payload),
         success: function (response) {
             alert("Saved Successfully!");
-            $("#selectedPaymentListPayment").empty();   // clear table
+            $("#selectedPaymentListPayment").empty();
             $("#invoiceAmount").val("0");
             $("#discount").val("0");
             $("#netAmount").val("0");

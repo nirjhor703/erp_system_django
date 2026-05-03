@@ -87,8 +87,11 @@
                                 <option value="bkash">Bkash</option>
                                 <option value="nogod">Nogod</option>
                                 <option value="rocket">Rocket</option>
+                                <option value="cheque">Cheque</option>
                             </select>
                         </div>
+                        <!-- Dynamic Payment Fields -->
+                        <div id="dynamicPaymentFields" style="overflow: hidden; transition: all 0.3s ease;"></div>
 
                     </div>
 
@@ -147,7 +150,7 @@
 
                         <div class="col-md-4">
                             <label class="fw-semibold">Total</label>
-                            <input type="number" id="total" class="form-control-sm" readonly>
+                            <input type="number" id="total" class="form-control-sm">
                         </div>
                     </div>
 
@@ -157,13 +160,9 @@
                             <thead class="table-success">
                                 <tr>
                                     <th>SL</th>
-                                    <th style="display:none;">Product ID</th>
-                                    <th>Name</th>
-                                    <th>QTY</th>
-                                    <th>Unit Price</th>
-                                    <th style="display:none;">MRP</th>
-                                    <th style="display:none;">Expiry</th>
-                                    <th>Total</th>
+                                    <th>Product Name</th>
+                                    <th>Bank</th>
+                                    <th>Amount</th>
                                     <th>Remove</th>
                                 </tr>
                             </thead>
@@ -262,6 +261,135 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+$(document).ready(function () {
+
+    // Ensure Cheque option exists
+    if ($("#payment_method option[value='cheque']").length === 0) {
+        $("#payment_method").append('<option value="cheque">Cheque</option>');
+    }
+
+    // Ensure dynamic container exists
+    if ($("#dynamicPaymentFields").length === 0) {
+        $("#payment_method").closest(".col-md-3").after(`
+            <div class="col-md-3">
+                <div id="dynamicPaymentFields"></div>
+            </div>
+        `);
+    }
+
+    // 🔹 Render Field (clean replace, no animation bug)
+    function renderPaymentField(method) {
+
+        let html = "";
+
+        if (method === "bkash") {
+            html = `
+                <label class="fw-semibold">Bkash Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="01XXXXXXXXX" maxlength="11">
+            `;
+        }
+
+        else if (method === "nogod") {
+            html = `
+                <label class="fw-semibold">Nagad Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="01XXXXXXXXX" maxlength="11">
+            `;
+        }
+
+        else if (method === "rocket") {
+            html = `
+                <label class="fw-semibold">Rocket Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="01XXXXXXXXX" maxlength="11">
+            `;
+        }
+
+        else if (method === "cheque") {
+            html = `
+                <label class="fw-semibold">Cheque Number</label>
+                <input type="text" id="payment_extra_number"
+                    class="form-control form-control-sm"
+                    placeholder="Enter Cheque Number">
+            `;
+        }
+
+        // 🔥 IMPORTANT: always clear then set (fix for your bug)
+        $("#dynamicPaymentFields").empty().html(html);
+    }
+
+    // 🔹 Handle Method Change
+    function handlePaymentMethodChange() {
+
+        let method = $("#payment_method").val();
+
+        // 🔥 ALWAYS CLEAR FIRST (fixes your issue)
+        $("#dynamicPaymentFields").empty();
+
+        // ✅ CASH → total editable
+        if (method === "cash") {
+            $("#total").prop("readonly", false);   // 🔥 FIXED
+            return;
+        }
+
+        // Other methods → total readonly
+        $("#total").prop("readonly", true);
+
+        // Render dynamic field
+        renderPaymentField(method);
+    }
+
+    // Trigger change
+    $("#payment_method").on("change", handlePaymentMethodChange);
+
+    // Run once on load
+    handlePaymentMethodChange();
+
+    // 🔹 Validation
+    function validatePaymentExtra() {
+
+        let method = $("#payment_method").val();
+        let number = ($("#payment_extra_number").val() || "").trim();
+
+        if (method === "bkash" || method === "nogod" || method === "rocket") {
+
+            if (!/^01\d{9}$/.test(number)) {
+                alert("❌ Number must be 11 digits and start with 01");
+                $("#payment_extra_number").focus();
+                return false;
+            }
+        }
+
+        if (method === "cheque") {
+
+            if (!number) {
+                alert("❌ Please enter cheque number");
+                $("#payment_extra_number").focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 🔹 Attach validation before save
+    $("#saveAllBtn").on("click", function (e) {
+
+        if (!validatePaymentExtra()) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return false;
+        }
+
+    });
+
+});
+</script>
 <script>
     window.APP_URLS = {
         DIVISION_COMBO_URL: "{% url 'get_divisions_combo' %}",
